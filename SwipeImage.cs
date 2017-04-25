@@ -1,7 +1,4 @@
-﻿// based on: http://forum.unity3d.com/threads/swipe-in-all-directions-touch-and-mouse.165416/
-// add video: https://developer.vuforia.com/forum/faq/unity-how-do-i-create-simple-videoplayback-app
-// and: https://developer.vuforia.com/forum/faq/unity-how-do-i-play-video-url
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -23,9 +20,6 @@ public class SwipeImage : MonoBehaviour
 	public float SlidingSpeed = 2.0f;
 
 	public GameObject[] model;
-
-	//Vector3 originalPosition = new Vector3 (-200,0,-6);
-
 
 	// Use this for initialization
 	void Start ()
@@ -144,12 +138,7 @@ public class SwipeImage : MonoBehaviour
 			}
 			if ( (currentSwipe.y > 0 && currentSwipe.x > -0.5f && currentSwipe.x < 0.5f) == false && (currentSwipe.y < 0 && currentSwipe.x > -0.5f && currentSwipe.x < 0.5f) == false && (currentSwipe.x < 0 && currentSwipe.y > -0.5f && currentSwipe.y < 0.5f) == false && (currentSwipe.x > 0 && currentSwipe.y > -0.5f && currentSwipe.y < 0.5f) == false)  {
 				Debug.Log("Click");
-				//if (i==0) 
-				//	Application.OpenURL("https://www.youtube.com/EdgarasArt");
-				//if (i==1) 
-				//	Application.OpenURL("https://www.ourtechart.com");
-				//if(i==2)
-				//	Application.OpenURL("https://www.youtube.com/EdgarasArt");
+				
 			}
 		}
 	}
