@@ -53,26 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
     private class LoginCheckTask extends AsyncTask<Void, Void, Void> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            asyncDialog = new ProgressDialog(MainActivity.this);
-            asyncDialog.setMessage("로딩중입니다..");
-            Toast.makeText(MainActivity.this,"Loading",Toast.LENGTH_SHORT).show();
-            asyncDialog.show();
-
-        }
-
+       
         @Override
         protected Void doInBackground(Void... arg0) {
 
             try
             {
-                Connection.Response res= Jsoup.connect(htmlTestUrl)
-                        .data("user.usr_id",mId)
-                        .data("user.passwd",mPw)
-                        .method(Connection.Method.POST)
-                        .execute();
+               
                 Map<String, String> loginCookies=res.cookies();
 
                 Document doc = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/main/main.action").cookies(loginCookies).get();
