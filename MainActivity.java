@@ -15,11 +15,11 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String htmlTestUrl="https://my.knu.ac.kr/stpo/comm/support/loginPortal/login.action?redirUrl=%2Fstpo%2Fstpo%2Fmain%2Fmain.action&menuParam=901"; // ë¡œê·¸ì¸ ìœ ì•Œì—˜
+    private String htmlTestUrl="https://my.knu.ac.kr/stpo/comm/support/loginPortal/login.action?redirUrl=%2Fstpo%2Fstpo%2Fmain%2Fmain.action&menuParam=901"; // ·Î±×ÀÎ À¯¾Ë¿¤
     private EditText idField;
     private EditText pwField;
     private Button loginButton;
-    private boolean loginCheck = false; // ë¡œê·¸ì¸ í™•ì¸
+    private boolean loginCheck = false; // ·Î±×ÀÎ È®ÀÎ
     String mId;
     String mPw;
     ProgressDialog asyncDialog ;
@@ -30,9 +30,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        idField = (EditText)findViewById(R.id.editText);  // ì•„ì´ë”” í•„ë“œ
-        pwField = (EditText)findViewById(R.id.editText2); // ë¹„ë²ˆ í•„ë“œ
-        loginButton = (Button)findViewById(R.id.button);  // ë¡œê·¸ì¸ ë²„íŠ¼
+        idField = (EditText)findViewById(R.id.editText);  // ¾ÆÀÌµğ ÇÊµå
+        pwField = (EditText)findViewById(R.id.editText2); // ºñ¹ø ÇÊµå
+        loginButton = (Button)findViewById(R.id.button);  // ·Î±×ÀÎ ¹öÆ°
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             asyncDialog = new ProgressDialog(MainActivity.this);
-            asyncDialog.setMessage("ë¡œë”©ì¤‘ì…ë‹ˆë‹¤..");
+            asyncDialog.setMessage("·ÎµùÁßÀÔ´Ï´Ù..");
             Toast.makeText(MainActivity.this,"Loading",Toast.LENGTH_SHORT).show();
             asyncDialog.show();
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 Map<String, String> loginCookies=res.cookies();
 
                 Document doc = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/main/main.action").cookies(loginCookies).get();
-                if(doc.toString().contains("//ê²Œì‹œë¬¼")) {
+                if(doc.toString().contains("//°Ô½Ã¹°")) {
 
                     loginCheck = !loginCheck;
 
@@ -100,10 +100,10 @@ public class MainActivity extends AppCompatActivity {
 
             if(loginCheck)
             {
-                Toast.makeText(MainActivity.this, "ë¡œê·¸ì¸ì„±ê³µ.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "·Î±×ÀÎ¼º°ø.", Toast.LENGTH_SHORT).show();
             }
             else
-                Toast.makeText(MainActivity.this,  "id, passwordì„ ë‹¤ì‹œ í™•ì¸í•˜ì„¸ìš”.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,  "id, passwordÀ» ´Ù½Ã È®ÀÎÇÏ¼¼¿ä.", Toast.LENGTH_SHORT).show();
 
         }
     }
