@@ -8,13 +8,32 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class KnuMain extends AppCompatActivity {
+
+
+    private ListView noticeListView;
+    private NoticeListAdapter adapter;
+    private List<Notice> noticeList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_knu_main);
+
+        noticeListView = (ListView) findViewById(R.id.noticeListView);
+        noticeList = new ArrayList<Notice>();
+        noticeList.add(new Notice("공지사항","2012097050윤성원","2017-05-08"));
+        noticeList.add(new Notice("공지사항","2012097050윤성원","2017-05-08"));
+        noticeList.add(new Notice("공지사항","2012097050윤성원","2017-05-08"));
+
+        adapter = new NoticeListAdapter(getApplicationContext(),noticeList);
+        noticeListView.setAdapter(adapter);
+
 
         final Button courseButton = (Button) findViewById(R.id.courseButton);
         final Button statisticsButton = (Button) findViewById(R.id.statisticsButton);
