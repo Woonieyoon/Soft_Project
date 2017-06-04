@@ -1,98 +1,121 @@
-package com.example.sungw.knuprojcet;
+package com.example.sungw.jsptest;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import java.util.Map;
+import java.io.*;
+import java.net.*;
 
-public class MainActivity extends AppCompatActivity {
-
-    private String htmlTestUrl="https://my.knu.ac.kr/stpo/comm/support/loginPortal/login.action?redirUrl=%2Fstpo%2Fstpo%2Fmain%2Fmain.action&menuParam=901"; // ∑Œ±◊¿Œ ¿ØæÀø§
-    private EditText idField;
-    private EditText pwField;
-    private Button loginButton;
-    private boolean loginCheck = false; // ∑Œ±◊¿Œ »Æ¿Œ
-    String mId;
-    String mPw;
-    ProgressDialog asyncDialog ;
-
-
+public class MainActivity extends Activity {
+    EditText userId, userPwd;
+    Button loginBtn, joinBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        idField = (EditText)findViewById(R.id.editText);  // æ∆¿Ãµ « µÂ
-        pwField = (EditText)findViewById(R.id.editText2); // ∫Òπ¯ « µÂ
-        loginButton = (Button)findViewById(R.id.button);  // ∑Œ±◊¿Œ πˆ∆∞
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mId = idField.getText().toString();
-                mPw = pwField.getText().toString();
-
-
-                LoginCheckTask t = new LoginCheckTask();
-                Toast.makeText(MainActivity.this,"Click",Toast.LENGTH_SHORT).show();
-                t.execute();
-            }
-        });
-
+        userId = (EditText) findViewById(R.id.userId);
+        userPwd = (EditText) findViewById(R.id.userPwd);
+        loginBtn = (Button) findViewById(R.id.loginBtn);
+        joinBtn = (Button) findViewById(R.id.joinBtn);
+        loginBtn.setOnClickListener(btnListener);
+        joinBtn.setOnClickListener(btnListener);
     }
-
-
-    private class LoginCheckTask extends AsyncTask<Void, Void, Void> {
-
-       
+    class CustomTask extends AsyncTask<String, Void, String> {
+        String sendMsg, receiveMsg;
         @Override
-        protected Void doInBackground(Void... arg0) {
+        protected String doInBackground(String... strings) {
+            try {
+                String str;
+                URL url = new URL("http://192.168.0.6:8080/project/data.jsp");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
+                sendMsg = "id="+strings[0]+"&pwd="+strings[1]+"&type="+strings[2];
+                osw.write(sendMsg);
+                osw.flush();
+                if(conn.getResponseCode() == conn.HTTP_OK) {
+                    InputStreamReader tmp = new InputStreamReader(conn.getInputStream(), "UTF-8");
+                    BufferedReader reader = new BufferedReader(tmp);
+                    StringBuffer buffer = new StringBuffer();
+                    while ((str = reader.readLine()) != null) {
+                        buffer.append(str);
+                    }
+                    receiveMsg = buffer.toString();
 
-            try
-            {
-               
-                Map<String, String> loginCookies=res.cookies();
-
-                Document doc = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/main/main.action").cookies(loginCookies).get();
-                if(doc.toString().contains("//∞‘Ω√π∞")) {
-
-                    loginCheck = !loginCheck;
-
-                    Document doc2 = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/stud/infoMngt/basisMngt/list.action").cookies(loginCookies).get();
-
+                } else {
+                    Log.i("ÌÜµÏã† Í≤∞Í≥º", conn.getResponseCode()+"ÏóêÎü¨");
                 }
 
-            }catch (Exception e)
-            {
-               e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-
-            super.onPostExecute(result);
-            asyncDialog.dismiss();
-
-            if(loginCheck)
-            {
-                Toast.makeText(MainActivity.this, "∑Œ±◊¿Œº∫∞¯.", Toast.LENGTH_SHORT).show();
-            }
-            else
-                Toast.makeText(MainActivity.this,  "id, password¿ª ¥ŸΩ√ »Æ¿Œ«œººø‰.", Toast.LENGTH_SHORT).show();
-
+            return receiveMsg;
         }
     }
 
+    View.OnClickListener btnListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.loginBtn : // Î°úÍ∑∏Ïù∏ Î≤ÑÌäº ÎàåÎ†ÄÏùÑ Í≤ΩÏö∞
+                    String loginid = userId.getText().toString();
+                    String loginpwd = userPwd.getText().toString();
+                    try {
+                        String result  = new CustomTask().execute(loginid,loginpwd,"login").get();
+                        if(result.equals("true")) {
+                            Toast.makeText(MainActivity.this,"Î°úÍ∑∏Ïù∏",Toast.LENGTH_SHORT).show();
+                             finish();
+                        } else if(result.equals("false")) {
+                            Toast.makeText(MainActivity.this,"ÏïÑÏù¥Îîî ÎòêÎäî ÎπÑÎ∞ÄÎ≤àÌò∏Í∞Ä ÌãÄÎ†∏Ïùå",Toast.LENGTH_SHORT).show();
+                            userId.setText("");
+                            userPwd.setText("");
+                        } else if(result.equals("noId")) {
+                            Toast.makeText(MainActivity.this,"Ï°¥Ïû¨ÌïòÏßÄ ÏïäÎäî ÏïÑÏù¥Îîî",Toast.LENGTH_SHORT).show();
+                            userId.setText("");
+                            userPwd.setText("");
+                        }
+                    }catch (Exception e) {}
+                    break;
+                case R.id.joinBtn : // ÌöåÏõêÍ∞ÄÏûÖ
+                    String joinid = userId.getText().toString();
+                    String joinpwd = userPwd.getText().toString();
+                    try {
+                        String result  = new CustomTask().execute(joinid,joinpwd,"join").get();
+                        if(result.equals("id")) {
+                            Toast.makeText(MainActivity.this,"Ïù¥ÎØ∏ Ï°¥Ïû¨ÌïòÎäî ÏïÑÏù¥ÎîîÏûÖÎãàÎã§.",Toast.LENGTH_SHORT).show();
+                            userId.setText("");
+                            userPwd.setText("");
+                        } else if(result.equals("ok")) {
+                            userId.setText("");
+                            userPwd.setText("");
+                            Toast.makeText(MainActivity.this,"ÌöåÏõêÍ∞ÄÏûÖÏùÑ Ï∂ïÌïòÌï©ÎãàÎã§.",Toast.LENGTH_SHORT).show();
+                        }
+                    }catch (Exception e) {}
+                    break;
+            }
+        }
+    };
 }
