@@ -18,22 +18,22 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:src="@drawable/login"
-                android:layout_weight="1"/>
+                android:layout_weight="3"/>
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="2">
 
             <EditText
                 android:id="@+id/idEdit"
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:background="@color/colorPrimary"
+                 android:background="@color/colorPrimary"
+                android:layout_marginTop="20dp"
                 android:drawableLeft="@drawable/ic_person_black_24dp"
                 android:drawableStart="@drawable/ic_person_black_24dp"
                 android:hint="아이디"
@@ -59,6 +59,14 @@
                 android:textColor="#ffffff"
                 android:textColorHint="#ffffff" />
 
+            <RadioGroup android:orientation="horizontal" android:layout_height="wrap_content" android:layout_width="200dp" android:layout_marginTop="10dp" android:layout_gravity="center_horizontal" android:id="@+id/loginGroup">
+
+                <RadioButton android:layout_height="wrap_content" android:layout_width="0dp" android:id="@+id/yeslogin" android:text="yes" android:layout_weight="1" android:checked="true"/>
+
+                <RadioButton android:layout_height="wrap_content" android:layout_width="0dp" android:id="@+id/normallogin" android:text="book" android:layout_weight="1"/>
+
+            </RadioGroup>
+
             <Button
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
@@ -71,7 +79,15 @@
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"/>
 
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="18dp"
+                android:layout_marginTop="10dp"
+                android:text="회원가입"
+                android:id="@+id/register"
+                android:textColor="@color/colorPrimaryDark"/>
 
 
             <TextView
@@ -80,7 +96,7 @@
                 android:layout_gravity="center"
                 android:textSize="18dp"
                 android:textColor="#aaaaaa"
-                android:layout_marginTop="55dp"
+                android:layout_marginTop="30dp"
                 android:text="#ID,PW는 yes 시스템과 동일합니다#"
                 />
 
@@ -89,7 +105,8 @@
                 android:layout_height="match_parent"
                 android:gravity="bottom"
                 android:layout_gravity="center"
-                android:paddingBottom="10dp">
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
 
                 <TextView
                     android:drawableStart="@drawable/ic_live_help_black_24dp"
