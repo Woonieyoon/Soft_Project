@@ -10,6 +10,7 @@ import android.widget.Button;
  * Created by sungw on 2017-06-05.
  */
 
+//글쓰기 버튼 눌렀을때 화면
 public class BookInsertActivity extends AppCompatActivity {
 
     Button save,cancel;
@@ -29,7 +30,7 @@ public class BookInsertActivity extends AppCompatActivity {
             }
         });
 
-        cancel.setOnClickListener(new View.OnClickListener() {
+        cancel.setOnClickListener(new View.OnClickListener() { //취소버튼
             @Override
             public void onClick(View v) {
                 finish();
