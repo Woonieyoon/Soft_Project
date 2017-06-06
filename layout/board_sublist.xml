@@ -34,7 +34,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="123dp"
-            android:background="@drawable/defaultbook"/>
+            android:background="@drawable/defaultbook"
+            android:id="@+id/insertimage"/>
 
 
 

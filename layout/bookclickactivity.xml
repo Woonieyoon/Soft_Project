@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFE0B2"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="작성일:"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="16dp"
+                android:textColor="#000000"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2017년 6월 5일"
+                android:id="@+id/showdate"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:textSize="17dp"
+                android:textColor="#000000"
+                />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="작성자:"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="17dp"
+                android:textColor="#000000"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="홍길동"
+                android:id="@+id/showname"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:textSize="17dp"
+                android:textColor="#000000"
+                />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제목:"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="12dp"
+                android:textSize="17dp"
+                android:textColor="#000000"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="전공책 빌려드립니다."
+                android:id="@+id/showtitle"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="12dp"
+                android:textSize="17dp"
+                android:textColor="#000000"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+
+
+            <ImageView
+                android:layout_width="124dp"
+                android:layout_height="124dp"
+                android:layout_gravity="center"
+                android:background="@drawable/defaultbook"
+                android:id = "@+id/bookimage"
+                android:layout_marginTop="10dp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/showcontent"
+                android:layout_width="340dp"
+                android:layout_height="270dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/memo_back"
+                android:gravity="top"
+                android:padding="10dp"
+                android:textColor="#ff000000"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/insertcomment"
+                android:text="댓글쓰기"
+                android:textColor="#000000"
+                android:textSize="10sp"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:background="@drawable/commentbutton"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="0"
+                android:layout_marginTop="2dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                />
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <SlidingDrawer
+        android:id="@+id/slide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:allowSingleTap="true"
+        android:animateOnClick="true"
+        android:bottomOffset="5dp"
+        android:content="@+id/content"
+        android:handle="@+id/handle"
+        android:orientation="vertical"
+        android:topOffset="60dp"
+        android:layout_alignParentTop="true">
+
+        <Button
+            android:id="@+id/handle"
+            android:text="댓글보기"
+            android:textColor="#000000"
+            android:textSize="10sp"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:background="@drawable/commentbutton"
+            android:shadowColor="#FFFFFF"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="0"
+            />
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#EaEaB5"
+            android:orientation="vertical"
+            >
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/commentlist"
+                android:layout_margin="15dp"
+                android:dividerHeight="13dp"
+                android:divider="#FFE0B2"
+                android:layout_weight="9"
+                >
+
+            </ListView>
+
+
+        </LinearLayout>
+    </SlidingDrawer>
+</RelativeLayout>
