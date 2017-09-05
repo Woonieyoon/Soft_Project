@@ -1,0 +1,221 @@
+package myhome.bookknu;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+
+/**
+ * Created by sungw on 2017-07-31.
+ */
+
+public class LoginActivity extends AppCompatActivity {
+
+    private EditText idField;
+    private EditText pwField;
+    private Button loginButton;
+    private TextView registerButton;
+
+    String type;
+    String id,pwd;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.login);
+
+        idField = (EditText)findViewById(R.id.idEdit);  // 아이디 필드
+        pwField = (EditText)findViewById(R.id.pwEdit); // 비번 필드
+        loginButton = (Button)findViewById(R.id.loginB);  // 로그인 버튼
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                type = "login";
+                id = idField.getText().toString();
+                pwd = pwField.getText().toString();
+
+                LoginActivity.LoginTask c = new LoginActivity.LoginTask(LoginActivity.this);
+                c.execute(type,id,pwd);
+
+            }
+        });
+
+        registerButton = (TextView)findViewById(R.id.register);//회원가입 버튼
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
+                LoginActivity.this.startActivity(registerIntent);
+            }
+        });
+
+    }
+
+
+
+    class LoginTask extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+        LoginTask(Context ctx)
+        {
+            context=ctx;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            alertDialog  = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Login status");
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            if(result.equals("1"))
+            {
+               Intent book = new Intent(LoginActivity.this,BookMainActivity.class);
+                Basicinfo.name = id;
+                //final DBHelper dbHelper = new DBHelper(getApplicationContext(), "Login.db", null, 1);
+                //dbHelper.insert(id);
+                //dbHelper.getResult().toString() 꺼내기
+                LoginActivity.this.startActivity(book);
+            }else
+            {
+                //result = "다시 입력하세요";
+                alertDialog.setMessage(result);
+                alertDialog.show();
+            }
+
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String type = params[0];
+            String login_url = "http://" + Basicinfo.URL + "/login.php";
+
+            if(type.equals("login"))
+            {
+                try
+                {
+
+                    String id = params[1];
+                    String pwd = params[2];
+                    URL url =new URL(login_url);
+                    HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+                    //httpURLConnection.setConnectTimeout(8000);
+                    //httpURLConnection.setReadTimeout(8000);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8") + "&"
+                            + URLEncoder.encode("pwd","UTF-8") + "=" + URLEncoder.encode(pwd,"UTF-8");
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                    outputStream.close();
+
+                    InputStream inputStream = null;
+                    inputStream = httpURLConnection.getInputStream();
+
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                    String result="";
+                    String line="";
+
+                    //line = bufferedReader.readLine();
+                    //result+=line;
+
+                    while( (line = bufferedReader.readLine()) != null)
+                    {
+                        result += line;
+                    }
+
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                    return result;
+
+                }catch(MalformedURLException e)
+                {
+                    e.printStackTrace();
+                }catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+            return null;
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+
+                final Dialog dig = new Dialog(LoginActivity.this);
+                dig.setTitle("");
+                dig.setContentView(R.layout.back);
+                dig.show();
+
+                Button su = (Button)dig.findViewById(R.id.button_success);
+                Button ca = (Button)dig.findViewById(R.id.button_cancel);
+
+                su.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        moveTaskToBack(true);
+                        finish();
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                    }
+                });
+
+                ca.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dig.cancel();
+                    }
+                });
+
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+}
