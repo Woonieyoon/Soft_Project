@@ -19,9 +19,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -52,7 +54,11 @@ public class BookMainActivity extends AppCompatActivity {
     private List<Book> noticeList;
     Button button;
     EditText search;
-    private String myJSON;
+    Button book_search;
+
+    ArrayAdapter spadapter;
+    Spinner sp;
+
     private static final String TAG_RESULTS = "result";
     private static final String TAG_ID = "id";
     private static final String TAG_TITLE = "title";
@@ -61,16 +67,25 @@ public class BookMainActivity extends AppCompatActivity {
     private static final String TAG_SUB = "sub";
     private static final String TAG_COUNT = "count";
 
+    //오래된것,최신
+    private String myJSON;
     JSONArray peoples = null;
 
+    //댓글순
+    private String subJSON;
+    JSONArray sub_count = null;
+
+    //조회순
+    private String countJSON;
+    JSONArray count_count = null;
+
     private int number=0;
+
+    private int sp_number = 0;
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-       // getSupportActionBar().setCustomView(R.layout.custom_bar);
-
 
         setContentView(R.layout.book_main);
 
@@ -123,27 +138,41 @@ public class BookMainActivity extends AppCompatActivity {
 
         //-------------------------------------------------------------------------------------------
         //listview에 값뿌려주기위함
-        BookMainActivity.GetDataJSON b = new BookMainActivity.GetDataJSON();
-        b.execute("http://" + Basicinfo.URL + "/getcontent.php");
+//        BookMainActivity.GetDataJSON b = new BookMainActivity.GetDataJSON();
+//        b.execute("http://" + Basicinfo.URL + "/getcontent.php");
 
         //-------------------------------------------------------------------------------------------
         bookListView = (ListView)findViewById(R.id.booklist);
         button = (Button)findViewById(R.id.toButton);
         search = (EditText)findViewById(R.id.search_edit);
+        book_search = (Button)findViewById(R.id.book_search);
 
         noticeList =  new ArrayList<Book>();
-        //noticeList.add(new Book("0","0","0","0","1개","2"));
         adapter = new BookListAdapter(getApplicationContext(),noticeList); //원래
 
-        //editText
-        search.addTextChangedListener(new TextWatcher() {
+        sp = (Spinner)findViewById(R.id.Spinner);
+        spadapter = ArrayAdapter.createFromResource(BookMainActivity.this,R.array.sorting, android.R.layout.simple_spinner_dropdown_item);
+        sp.setAdapter(spadapter);
+
+        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //0:오래된순,1:최신순,2:댓글순,3:조회순
+                sp_number = position;
+                spinner_board(position);
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onNothingSelected(AdapterView<?> parent) {
+              }
+        });
 
-                String ch = s.toString();// edittext 문자열
+        //검색 눌렀을경우
+        book_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(BookMainActivity.this,sp.getSelectedItem().toString(),Toast.LENGTH_SHORT).show();
+                String getText = search.getText().toString();
 
                 int book_num = adapter.getCount();//글전체 개수 파악
                 for(int i=0; i<book_num ;i++)
@@ -154,12 +183,9 @@ public class BookMainActivity extends AppCompatActivity {
                 bookListView.clearChoices();
                 adapter.notifyDataSetChanged();
 
-                search_board(ch);
+                search_board(getText);
 
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
         });
 
 
@@ -191,10 +217,6 @@ public class BookMainActivity extends AppCompatActivity {
 
                 startActivity(n_click);
 
-                //Toast.makeText(BookMainActivity.this,a, Toast.LENGTH_SHORT).show();
-                //Uri uri = Uri.parse("http://gp.knu.ac.kr"+a);
-                //Intent t = new Intent(BookMainActivity.this,BookClickActivity.class);
-                //startActivity(t);
             }
         });
 
@@ -254,7 +276,7 @@ public class BookMainActivity extends AppCompatActivity {
                 String count = c.getString(TAG_COUNT);
                 String sumdate;
 
-                if(title.contains(edit)) {
+                if(SoundSearcher.matchString(title,edit)) {
                     int ch = Integer.parseInt(date);
                     int year = ch / 10000;
                     int month = (ch % 10000) / 100;
@@ -275,7 +297,67 @@ public class BookMainActivity extends AppCompatActivity {
         }
     }
 
-    //데이터게시판 뿌리기 위함
+    //일반스피너 선택시 호출됨
+    public void spinner_board(int n)
+    {
+        //test---------------------------------------------------------------------------------------
+        int book_num = adapter.getCount();//글전체 개수 파악
+        for(int i=0; i<book_num ;i++)
+        {
+            noticeList.remove(0); //지워지면 position 값이 계속 감소되므로 맨위에서 지우는게 옳다고 판단됨.
+        }
+
+        try{
+            if(n==0) //오래된순
+            {
+                BookMainActivity.GetDataJSON b = new BookMainActivity.GetDataJSON();
+                b.execute("http://" + Basicinfo.URL + "/getcontent.php");
+            }
+            else if(n==1) //최신순
+            {
+                JSONObject jsonObj = new JSONObject(myJSON);
+                peoples = jsonObj.getJSONArray(TAG_RESULTS);
+
+                for(int i=peoples.length()-1; i>=0; i--) {
+                    JSONObject c = peoples.getJSONObject(i);
+                    String id = c.getString(TAG_ID);
+                    String title = c.getString(TAG_TITLE);
+                    String content = c.getString(TAG_CONTENT);
+                    String date = c.getString(TAG_DATE);
+                    String sub = c.getString(TAG_SUB);
+                    String count = c.getString(TAG_COUNT);
+                    String sumdate;
+
+                    int ch = Integer.parseInt(date);
+                    int year = ch / 10000;
+                    int month = (ch % 10000) / 100;
+                    int day = (ch % 10000) % 100;
+                    sumdate = year + "년 " + month + "월 " + day + "일";
+                    //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
+                    noticeList.add(new Book(sumdate, id, title, content, sub, count));
+                }
+            }else if(n==2)//댓글순
+            {
+                BookMainActivity.GetSubDataJSON b = new BookMainActivity.GetSubDataJSON();
+                b.execute("http://" + Basicinfo.URL + "/getsub.php");
+
+            }else if(n==3)//조회순
+            {
+                BookMainActivity.GetCountDataJSON b = new BookMainActivity.GetCountDataJSON();
+                b.execute("http://" + Basicinfo.URL + "/getsortcount.php");
+            }
+
+
+
+            bookListView.setAdapter(adapter);
+
+        }catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    //데이터게시판 뿌리기 위함(최신,오래)
     public void insertBoard()
     {
         //test---------------------------------------------------------------------------------------
@@ -316,7 +398,7 @@ public class BookMainActivity extends AppCompatActivity {
         }
     }
 
-       //게시판 데이터 뿌리기위함
+       //게시판 데이터 뿌리기위함(최신,오랜된)
        class GetDataJSON extends AsyncTask<String,Void,String> {
 
             @Override
@@ -348,10 +430,165 @@ public class BookMainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result) {
                 myJSON = result;
-                //Toast.makeText(BookMainActivity.this,result,Toast.LENGTH_SHORT).show();
                 insertBoard();
             }
         }
+
+
+    //데이터게시판 뿌리기 위함(댓글)
+    public void insertSubBoard()
+    {
+        //test---------------------------------------------------------------------------------------
+
+        try{
+            JSONObject jsonObj = new JSONObject(subJSON);
+            sub_count = jsonObj.getJSONArray(TAG_RESULTS);
+
+            for(int i=0; i< sub_count.length(); i++)
+            {
+                JSONObject c = peoples.getJSONObject(i);
+                String id = c.getString(TAG_ID);
+                String title = c.getString(TAG_TITLE);
+                String content = c.getString(TAG_CONTENT);
+                String date = c.getString(TAG_DATE);
+                String sub = c.getString(TAG_SUB);
+                String count = c.getString(TAG_COUNT);
+                String sumdate;
+
+                if(!date.equals("")) {
+                    int ch = Integer.parseInt(date);
+                    int year = ch / 10000;
+                    int month = (ch % 10000) / 100;
+                    int day = (ch % 10000) % 100;
+                    sumdate = year+"년 "+month+"월 "+day+"일";
+                    //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
+                    noticeList.add(new Book(sumdate,id,title,content,sub,count));
+                }
+
+            }
+            //adapter = new BookListAdapter(getApplicationContext(),noticeList);
+            bookListView.setAdapter(adapter);
+
+        }catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    //게시판 데이터 뿌리기위함(댓글)
+    class GetSubDataJSON extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String uri = params[0];
+
+            BufferedReader bufferedReader = null;
+
+            try {
+                URL url = new URL(uri);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                StringBuilder sb = new StringBuilder();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String json;
+                while ((json = bufferedReader.readLine()) != null) {
+                    sb.append(json + "\n");
+                }
+
+                return sb.toString().trim();
+            } catch (Exception e) {
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            subJSON = result;
+            insertSubBoard();
+        }
+    }
+
+    //데이터게시판 뿌리기 위함(조회수)
+    public void insertCountBoard()
+    {
+        //test---------------------------------------------------------------------------------------
+
+        try{
+            JSONObject jsonObj = new JSONObject(countJSON);
+            count_count = jsonObj.getJSONArray(TAG_RESULTS);
+
+            for(int i=0; i< count_count.length(); i++)
+            {
+                JSONObject c = peoples.getJSONObject(i);
+                String id = c.getString(TAG_ID);
+                String title = c.getString(TAG_TITLE);
+                String content = c.getString(TAG_CONTENT);
+                String date = c.getString(TAG_DATE);
+                String sub = c.getString(TAG_SUB);
+                String count = c.getString(TAG_COUNT);
+                String sumdate;
+
+                if(!date.equals("")) {
+                    int ch = Integer.parseInt(date);
+                    int year = ch / 10000;
+                    int month = (ch % 10000) / 100;
+                    int day = (ch % 10000) % 100;
+                    sumdate = year+"년 "+month+"월 "+day+"일";
+                    //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
+                    noticeList.add(new Book(sumdate,id,title,content,sub,count));
+                }
+
+            }
+            //adapter = new BookListAdapter(getApplicationContext(),noticeList);
+            bookListView.setAdapter(adapter);
+
+        }catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    //게시판 데이터 뿌리기위함(조회수)
+    class GetCountDataJSON extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String uri = params[0];
+
+            BufferedReader bufferedReader = null;
+
+            try {
+                URL url = new URL(uri);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                StringBuilder sb = new StringBuilder();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String json;
+                while ((json = bufferedReader.readLine()) != null) {
+                    sb.append(json + "\n");
+                }
+
+                return sb.toString().trim();
+            } catch (Exception e) {
+                return null;
+            }
+
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            countJSON = result;
+            insertCountBoard();
+        }
+    }
 
 
     @Override
@@ -392,7 +629,6 @@ public class BookMainActivity extends AppCompatActivity {
                        dig.cancel();
                    }
                });
-
        }
 
         return super.onKeyDown(keyCode, event);
