@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@color/colorPrimary">
-
-            <TextView
+            
+                   <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -33,10 +33,64 @@
 
         </LinearLayout>
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text = "*인증 후 회원가입 가능*"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingTop="20dp"
+                android:textSize="20dp"/>
+
+            <EditText
+                android:id="@+id/kidEdit"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:background="@color/colorPrimary"
+                android:drawableLeft="@drawable/ic_person_black_24dp"
+                android:drawableStart="@drawable/ic_person_black_24dp"
+                android:hint="통합정보시스템 ID"
+                android:inputType="textPassword"
+                android:padding="10dp"
+                android:textColor="#ffffff"
+                android:textColorHint="#ffffff" />
+
+
+
+            <EditText
+                android:id="@+id/kpwEdit"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorPrimary"
+                android:drawableLeft="@drawable/ic_https_black_24dp"
+                android:drawableStart="@drawable/ic_https_black_24dp"
+                android:hint="통합정보시스템 PWD"
+                android:inputType="textPassword"
+                android:padding="10dp"
+                android:textColor="#ffffff"
+                android:textColorHint="#ffffff" />
+
+            <Button
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:background="@color/colorPrimaryDark"
+                android:text="인증하기"
+                android:id="@+id/check"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center" />
 
 
             <EditText
@@ -84,32 +138,20 @@
                 android:padding="10dp"
                 android:textColor="#ffffff"
                 android:textColorHint="#ffffff" />
-            
-            <RadioGroup
+
+            <Button
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/genderGroup"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp">
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:background="@color/colorPrimaryDark"
+                android:text="ID중복체크"
+                android:id="@+id/IDcheckButton"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center" />
+            
 
-
-                <RadioButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="남자"
-                    android:id="@+id/genderMan"
-                    android:layout_weight="1"
-                    android:checked="true"/>
-
-                <RadioButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="여자"
-                    android:id="@+id/genderWoman"
-                    android:layout_weight="1"/>
-
-            </RadioGroup>
 
 
             <Button
