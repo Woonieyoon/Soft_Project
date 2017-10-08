@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="종료하시겠습니까?"
+        android:id="@+id/textView"
+        android:textAppearance="?android:attr/textAppearance"
+        android:layout_gravity="center"
+        />
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="확인"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:id="@+id/button_success"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="취소"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:id="@+id/button_cancel"
+            />
+
+
+
+    </TableRow>
+
+
+</LinearLayout>

@@ -14,14 +14,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-              android:text ="제목:"
+            android:text ="제목:"
             android:textSize="22dp"
             android:textColor="#000000"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id = "@+id/write_title"/>
+            android:id = "@+id/write_title1"/>
 
     </LinearLayout>
 
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/defaultbook"
-            android:id = "@+id/bookimage"
+            android:id = "@+id/bookimage1"
             android:layout_weight="3"/>
 
         <ImageView
@@ -79,7 +79,7 @@
 
 
     <LinearLayout
-        android:id="@+id/memoLayout"
+        android:id="@+id/memoLayout1"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
         android:weightSum="1">
 
         <EditText
-            android:id="@+id/write_content"
+            android:id="@+id/write_content1"
             android:layout_width="340dp"
             android:layout_height="250dp"
             android:layout_margin="5dp"
@@ -106,7 +106,7 @@
 
 
         <Button
-            android:id="@+id/saveBtn"
+            android:id="@+id/saveBtn1"
             android:text="저장"
             android:textColor="#4F4F4F"
             android:textSize="30sp"
@@ -124,7 +124,7 @@
             />
 
         <Button
-            android:id="@+id/cancelBtn"
+            android:id="@+id/cancelBtn1"
             android:text="취소"
             android:textColor="#4F4F4F"
             android:textSize="30sp"

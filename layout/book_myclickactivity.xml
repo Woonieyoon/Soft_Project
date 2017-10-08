@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2017년 6월 5일"
-                android:id="@+id/showdate"
+                android:id="@+id/showdate1"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 android:textSize="17dp"
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="홍길동"
-                android:id="@+id/showname"
+                android:id="@+id/showname1"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 android:textSize="17dp"
@@ -83,7 +83,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="전공책 빌려드립니다."
-                android:id="@+id/showtitle"
+                android:id="@+id/showtitle1"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="12dp"
                 android:textSize="17dp"
@@ -106,7 +106,7 @@
                 android:layout_height="124dp"
                 android:layout_gravity="center"
                 android:background="@drawable/defaultbook"
-                android:id = "@+id/bookimage"
+                android:id = "@+id/bookimage1"
                 android:layout_marginTop="10dp"
                 />
 
@@ -122,9 +122,9 @@
             android:weightSum="1">
 
             <TextView
-                android:id="@+id/showcontent"
+                android:id="@+id/showcontent1"
                 android:layout_width="340dp"
-                android:layout_height="270dp"
+                android:layout_height="250dp"
                 android:layout_margin="5dp"
                 android:background="@drawable/memo_back"
                 android:gravity="top"
@@ -134,7 +134,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/insertcomment"
+                android:id="@+id/insertcomment1"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
@@ -149,6 +149,38 @@
                 android:textColor="#000000"
                 android:textSize="10sp" />
 
+            <Button
+                android:id="@+id/rewrite"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/commentbutton"
+                android:gravity="center"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="0"
+                android:text="수정"
+                android:textColor="#000000"
+                android:textSize="10sp" />
+
+            <Button
+                android:id="@+id/writedelete"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/commentbutton"
+                android:gravity="center"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="0"
+                android:text="삭제"
+                android:textColor="#000000"
+                android:textSize="10sp" />
+
 
         </LinearLayout>
 
@@ -157,20 +189,20 @@
     </LinearLayout>
 
     <SlidingDrawer
-        android:id="@+id/slide"
+        android:id="@+id/slide1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:allowSingleTap="true"
         android:animateOnClick="true"
         android:bottomOffset="5dp"
-        android:content="@+id/content"
-        android:handle="@+id/handle"
+        android:content="@+id/content1"
+        android:handle="@+id/handle1"
         android:orientation="vertical"
         android:topOffset="60dp"
         android:layout_alignParentTop="true">
 
         <Button
-            android:id="@+id/handle"
+            android:id="@+id/handle1"
             android:text="댓글보기"
             android:textColor="#000000"
             android:textSize="10sp"
@@ -184,7 +216,7 @@
             />
 
         <LinearLayout
-            android:id="@+id/content"
+            android:id="@+id/content1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#EaEaB5"
@@ -194,7 +226,7 @@
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/commentlist"
+                android:id="@+id/commentlist1"
                 android:layout_margin="15dp"
                 android:dividerHeight="13dp"
                 android:divider="#FFE0B2"
