@@ -3,6 +3,8 @@ package myhome.bookknu;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView registerButton;
 
+
     String type;
     String id,pwd;
     @Override
@@ -51,17 +55,22 @@ public class LoginActivity extends AppCompatActivity {
         pwField = (EditText)findViewById(R.id.pwEdit); // 비번 필드
         loginButton = (Button)findViewById(R.id.loginB);  // 로그인 버튼
 
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                type = "login";
-                id = idField.getText().toString();
-                pwd = pwField.getText().toString();
+                if(internet_check()) {
+                    type = "login";
+                    id = idField.getText().toString();
+                    pwd = pwField.getText().toString();
 
-                LoginActivity.LoginTask c = new LoginActivity.LoginTask(LoginActivity.this);
-                c.execute(type,id,pwd);
-
+                    LoginActivity.LoginTask c = new LoginActivity.LoginTask(LoginActivity.this);
+                    c.execute(type, id, pwd);
+                }else
+                {
+                    Toast.makeText(LoginActivity.this,"네트워크 연결 상태를 확인하세요",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -100,16 +109,10 @@ public class LoginActivity extends AppCompatActivity {
             if(result.equals("1"))
             {
                Intent book = new Intent(LoginActivity.this,BookMainActivity.class);
-                Basicinfo.name = id;
-                //final DBHelper dbHelper = new DBHelper(getApplicationContext(), "Login.db", null, 1);
-                //dbHelper.insert(id);
-                //dbHelper.getResult().toString() 꺼내기
                 LoginActivity.this.startActivity(book);
             }else
             {
-                //result = "다시 입력하세요";
-                alertDialog.setMessage(result);
-                alertDialog.show();
+              Toast.makeText(LoginActivity.this,"ID or 비밀번호를 다시 확인하세요!",Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -217,5 +220,19 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return super.onKeyDown(keyCode, event);
+    }
+
+    private boolean internet_check()
+    {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService (Context.CONNECTIVITY_SERVICE);
+        boolean isMobileAvailable = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isAvailable();
+        boolean isMobileConnect = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+        boolean isWifiAvailable = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isAvailable();
+        boolean isWifiConnect = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
+
+        if ( (isWifiAvailable && isWifiConnect) || (isMobileAvailable && isMobileConnect))
+                   return true;
+
+        return false;
     }
 }

@@ -31,20 +31,20 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 
+
 /**
- * Created by sungw on 2017-08-24.
+ * Created by sungw on 2017-09-17.
  */
 
-//취업 어댑터
-public class JobAdapter  extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
+public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ViewHolder> {
 
-    private List<JobListItem> listItems;
+    private List<ClubListItem> listItems;
     private Context context;
 
     private View layout;
     private AlertDialog ad;
 
-    public JobAdapter(List<JobListItem> listItems, Context context)
+    public ClubAdapter(List<ClubListItem> listItems, Context context)
     {
         this.listItems = listItems;
         this.context = context;
@@ -52,18 +52,18 @@ public class JobAdapter  extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.job_listitem,parent,false);
-        return new ViewHolder(v);
+    public ClubAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.club_listitem,parent,false);
+        return new ClubAdapter.ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        final JobListItem listItem = listItems.get(position);
-        holder.j_title.setText(listItem.getJ_title());
-        holder.j_content.setText(listItem.getJ_content());
-        holder.j_date.setText(listItem.getJ_date());
-        holder.j_id.setText(listItem.getJ_id());
+    public void onBindViewHolder(ClubAdapter.ViewHolder holder, int position) {
+        final ClubListItem listItem = listItems.get(position);
+        holder.c_title.setText(listItem.getC_title());
+        holder.c_content.setText(listItem.getC_content());
+        holder.c_date.setText(listItem.getC_date());
+        holder.c_id.setText(listItem.getC_id());
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,35 +83,39 @@ public class JobAdapter  extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
                         switch(which)
                         {
                             case 0: //Message 보내기
+
                                 Context ctx = context;
                                 LayoutInflater inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                                layout = inflater.inflate(R.layout.message_dialog,null);
+                                layout = inflater.inflate(R.layout.messageclub_dialog,null);
                                 final AlertDialog.Builder aDlgb = new AlertDialog.Builder(context);
                                 aDlgb.setView(layout);
                                 ad = aDlgb.create();
                                 ad.show();
 
                                 //저장
-                                Button save = (Button)layout.findViewById(R.id.message_save); //저장버튼누를시
+                                Button save = (Button)layout.findViewById(R.id.clubmessage_save); //저장버튼누를시
                                 save.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        EditText save = (EditText)layout.findViewById(R.id.message_edit);
+
+                                        EditText save = (EditText)layout.findViewById(R.id.clubmessage_edit);
 
                                         String send = Basicinfo.name;
-                                        String receive = listItem.getJ_id();
+                                        String receive = listItem.getC_id();
                                         String message = save.getText().toString();
 
-                                        JobAdapter.MessageTask b = new JobAdapter.MessageTask();
-                                        b.execute(send,receive,message);
-                                        ad.dismiss();
+                                        Toast.makeText(context,send,Toast.LENGTH_SHORT).show();
 
+                                        ClubAdapter.MessageTask b = new ClubAdapter.MessageTask();
+                                        b.execute(send,receive,message);
+
+
+                                        ad.dismiss();
                                     }
                                 });
 
-
                                 //취소
-                                Button cancel = (Button)layout.findViewById(R.id.message_cancel); //저장버튼누를시
+                                Button cancel = (Button)layout.findViewById(R.id.clubmessage_cancel); //저장버튼누를시
                                 cancel.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -121,16 +125,17 @@ public class JobAdapter  extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
                                 break;
 
-                            case 1: //글읽기
-                                String jdate =listItem.getJ_date();
-                                String jname = listItem.getJ_id();
-                                String jtitle = listItem.getJ_title();
-                                String jcontent =  listItem.getJ_content();
-                                Intent read = new Intent(context,JobReadingActivity.class);
-                                read.putExtra("date",jdate);
-                                read.putExtra("name",jname);
-                                read.putExtra("title",jtitle);
-                                read.putExtra("content",jcontent);
+                            case 1:
+                                //글읽기
+                                String cdate =listItem.getC_date();
+                                String cname = listItem.getC_id();
+                                String ctitle = listItem.getC_title();
+                                String ccontent =  listItem.getC_content();
+                                Intent read = new Intent(context,ClubReadingActivity.class);
+                                read.putExtra("date",cdate);
+                                read.putExtra("name",cname);
+                                read.putExtra("title",ctitle);
+                                read.putExtra("content",ccontent);
                                 context.startActivity(read);
                                 break;
 
@@ -151,21 +156,21 @@ public class JobAdapter  extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder
     {
-        public TextView j_title;
-        public TextView j_content;
-        public TextView j_date;
-        public TextView j_id;
+        public TextView c_title;
+        public TextView c_content;
+        public TextView c_date;
+        public TextView c_id;
         public LinearLayout linearLayout;
 
         public ViewHolder(View itemView)
         {
             super(itemView);
 
-            j_title = (TextView)itemView.findViewById(R.id.j_title);
-            j_content = (TextView)itemView.findViewById(R.id.j_content);
-            j_date = (TextView)itemView.findViewById(R.id.j_date);
-            j_id = (TextView)itemView.findViewById(R.id.j_id);
-            linearLayout =(LinearLayout)itemView.findViewById(R.id.job_linearlayout);
+            c_title = (TextView)itemView.findViewById(R.id.c_title);
+            c_content = (TextView)itemView.findViewById(R.id.c_content);
+            c_date = (TextView)itemView.findViewById(R.id.c_date);
+            c_id = (TextView)itemView.findViewById(R.id.c_id);
+            linearLayout =(LinearLayout)itemView.findViewById(R.id.club_linearlayout);
         }
     }
 
@@ -176,7 +181,6 @@ public class JobAdapter  extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         AlertDialog alertDialog;
         Context context;
 
-
         @Override
         protected void onPreExecute() {
         }
@@ -185,12 +189,6 @@ public class JobAdapter  extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
         protected void onPostExecute(String result) {
 
 
-            if(result.equals("1"))
-            {
-                Toast.makeText(context,"성공",Toast.LENGTH_SHORT).show();
-            }else
-            {
-            }
 
         }
 
@@ -243,9 +241,6 @@ public class JobAdapter  extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
                 String result="";
                 String line="";
-
-                //line = bufferedReader.readLine();
-                //result+=line;
 
                 while( (line = bufferedReader.readLine()) != null)
                 {

@@ -1,6 +1,8 @@
 package myhome.bookknu;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.os.AsyncTask;
@@ -9,11 +11,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,9 +35,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -83,6 +94,9 @@ public class BookMainActivity extends AppCompatActivity {
 
     private int sp_number = 0;
 
+    private View layout;
+    private AlertDialog ad;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,7 +141,11 @@ public class BookMainActivity extends AppCompatActivity {
                 }else if(id.equals("Log out"))
                 {
                     number =7;
+                }else if(id.equals("관리"))
+                {
+                    number =8;
                 }
+
 
                 pageChange(number);
                 return false;
@@ -182,7 +200,6 @@ public class BookMainActivity extends AppCompatActivity {
 
                 bookListView.clearChoices();
                 adapter.notifyDataSetChanged();
-
                 search_board(getText);
 
             }
@@ -202,24 +219,87 @@ public class BookMainActivity extends AppCompatActivity {
         //-------------------------------------------------------------------------------------------
         //리스트뷰 선택했을때
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String ndate = ((Book)adapter.getItem(position)).getDate();  //날짜
-                String nname =  ((Book)adapter.getItem(position)).getName(); //이름
-                String ntitle = ((Book)adapter.getItem(position)).getTitle(); //제목
-                String ncontent =  ((Book)adapter.getItem(position)).getContent(); //내용
+                final String ndate = ((Book)adapter.getItem(position)).getDate();  //날짜
+                final String nname =  ((Book)adapter.getItem(position)).getName(); //이름
+                final String ntitle = ((Book)adapter.getItem(position)).getTitle(); //제목
+                final String ncontent =  ((Book)adapter.getItem(position)).getContent(); //내용
 
-                Intent n_click = new Intent(BookMainActivity.this,BookClickActivity.class);
-                n_click.putExtra("date",ndate);
-                n_click.putExtra("name",nname);
-                n_click.putExtra("title",ntitle);
-                n_click.putExtra("content",ncontent);
+                CharSequence info[] = new CharSequence[] {"Message 보내기", "글읽기" , "신고하기" };
 
-                startActivity(n_click);
+                AlertDialog.Builder builder = new AlertDialog.Builder(BookMainActivity.this);
+                builder.setTitle("선택하세요!!");
+                builder.setIcon(R.drawable.knu);
 
+                builder.setItems(info, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        switch(which)
+                        {
+                            case 0: //Message 보내기
+
+                                Context ctx = BookMainActivity.this;
+                                LayoutInflater inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                layout = inflater.inflate(R.layout.message_dialog,null);
+                                final AlertDialog.Builder aDlgb = new AlertDialog.Builder(ctx);
+                                aDlgb.setView(layout);
+                                ad = aDlgb.create();
+                                ad.show();
+
+                                //저장
+                                Button save = (Button)layout.findViewById(R.id.message_save); //저장버튼누를시
+                                save.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        EditText save = (EditText)layout.findViewById(R.id.message_edit);
+
+                                        String send = Basicinfo.name;
+                                        String receive = nname;
+                                        String message = save.getText().toString();
+
+                                        BookMainActivity.MessageTask b = new BookMainActivity.MessageTask();
+                                        b.execute(send,receive,message);
+                                        ad.dismiss();
+
+                                    }
+                                });
+
+
+                                //취소
+                                Button cancel = (Button)layout.findViewById(R.id.message_cancel); //저장버튼누를시
+                                cancel.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ad.dismiss();
+                                    }
+                                });
+
+                                break;
+
+                            case 1: //글읽기
+                                Intent n_click = new Intent(BookMainActivity.this,BookClickActivity.class);
+                                n_click.putExtra("date",ndate);
+                                n_click.putExtra("name",nname);
+                                n_click.putExtra("title",ntitle);
+                                n_click.putExtra("content",ncontent);
+                                startActivity(n_click);
+                                break;
+
+                            case 2: //신고하기
+                                BookMainActivity.ReportTask r = new BookMainActivity.ReportTask(BookMainActivity.this);
+                                r.execute(Basicinfo.name,nname,ntitle,ncontent,ndate);
+                                break;
+                        }
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
             }
         });
-
     }
 
     //page넘기기 위함
@@ -235,7 +315,7 @@ public class BookMainActivity extends AppCompatActivity {
 
         }else if(a==3)//동아리
         {
-
+            startActivity(new Intent(this,ClubMainActivity.class));
         }else if(a==4)//자유
         {
             startActivity(new Intent(this,FreeMainActivity.class));
@@ -249,12 +329,12 @@ public class BookMainActivity extends AppCompatActivity {
         }else if(a==7)
         {
             startActivity(new Intent(this,LoginActivity.class));
+        }else if(a==8)
+        {
+            startActivity(new Intent(this,SettingActivity.class));
         }
 
     }
-
-
-
 
     //검색할때 호출됨
     public void search_board(String edit)
@@ -335,7 +415,9 @@ public class BookMainActivity extends AppCompatActivity {
                     sumdate = year + "년 " + month + "월 " + day + "일";
                     //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
                     noticeList.add(new Book(sumdate, id, title, content, sub, count));
+
                 }
+                bookListView.setAdapter(adapter);
             }else if(n==2)//댓글순
             {
                 BookMainActivity.GetSubDataJSON b = new BookMainActivity.GetSubDataJSON();
@@ -347,9 +429,6 @@ public class BookMainActivity extends AppCompatActivity {
                 b.execute("http://" + Basicinfo.URL + "/getsortcount.php");
             }
 
-
-
-            bookListView.setAdapter(adapter);
 
         }catch (JSONException e)
         {
@@ -446,7 +525,7 @@ public class BookMainActivity extends AppCompatActivity {
 
             for(int i=0; i< sub_count.length(); i++)
             {
-                JSONObject c = peoples.getJSONObject(i);
+                JSONObject c = sub_count.getJSONObject(i);
                 String id = c.getString(TAG_ID);
                 String title = c.getString(TAG_TITLE);
                 String content = c.getString(TAG_CONTENT);
@@ -455,15 +534,12 @@ public class BookMainActivity extends AppCompatActivity {
                 String count = c.getString(TAG_COUNT);
                 String sumdate;
 
-                if(!date.equals("")) {
-                    int ch = Integer.parseInt(date);
-                    int year = ch / 10000;
-                    int month = (ch % 10000) / 100;
-                    int day = (ch % 10000) % 100;
-                    sumdate = year+"년 "+month+"월 "+day+"일";
-                    //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
-                    noticeList.add(new Book(sumdate,id,title,content,sub,count));
-                }
+                int ch = Integer.parseInt(date);
+                int year = ch / 10000;
+                int month = (ch % 10000) / 100;
+                int day = (ch % 10000) % 100;
+                sumdate = year+"년 "+month+"월 "+day+"일";
+                noticeList.add(new Book(sumdate,id,title,content,sub,count));
 
             }
             //adapter = new BookListAdapter(getApplicationContext(),noticeList);
@@ -512,18 +588,18 @@ public class BookMainActivity extends AppCompatActivity {
         }
     }
 
+
     //데이터게시판 뿌리기 위함(조회수)
     public void insertCountBoard()
     {
         //test---------------------------------------------------------------------------------------
-
         try{
             JSONObject jsonObj = new JSONObject(countJSON);
             count_count = jsonObj.getJSONArray(TAG_RESULTS);
 
             for(int i=0; i< count_count.length(); i++)
             {
-                JSONObject c = peoples.getJSONObject(i);
+                JSONObject c = count_count.getJSONObject(i);
                 String id = c.getString(TAG_ID);
                 String title = c.getString(TAG_TITLE);
                 String content = c.getString(TAG_CONTENT);
@@ -532,18 +608,15 @@ public class BookMainActivity extends AppCompatActivity {
                 String count = c.getString(TAG_COUNT);
                 String sumdate;
 
-                if(!date.equals("")) {
-                    int ch = Integer.parseInt(date);
-                    int year = ch / 10000;
-                    int month = (ch % 10000) / 100;
-                    int day = (ch % 10000) % 100;
-                    sumdate = year+"년 "+month+"월 "+day+"일";
-                    //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
-                    noticeList.add(new Book(sumdate,id,title,content,sub,count));
-                }
+                int ch = Integer.parseInt(date);
+                int year = ch / 10000;
+                int month = (ch % 10000) / 100;
+                int day = (ch % 10000) % 100;
+                sumdate = year+"년 "+month+"월 "+day+"일";
 
+                noticeList.add(new Book(sumdate,id,title,content,sub,count));
             }
-            //adapter = new BookListAdapter(getApplicationContext(),noticeList);
+
             bookListView.setAdapter(adapter);
 
         }catch (JSONException e)
@@ -589,6 +662,319 @@ public class BookMainActivity extends AppCompatActivity {
             insertCountBoard();
         }
     }
+
+
+    //message 보내기
+    public class MessageTask extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+
+            if(result.equals("1"))
+            {
+                Toast.makeText(BookMainActivity.this,"성공",Toast.LENGTH_SHORT).show();
+            }else
+            {
+            }
+
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            long now = System.currentTimeMillis();
+            Date d = new Date(now);
+            SimpleDateFormat s = new SimpleDateFormat("yyyyMMdd");
+            String date = s.format(d);
+
+            String login_url = "http://" + Basicinfo.URL + "/insertmessage.php";
+
+            try
+            {
+                String send = params[0];
+                String receive = params[1];
+                String message = params[2];
+
+                URL url =new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                //httpURLConnection.setConnectTimeout(8000);
+                //httpURLConnection.setReadTimeout(8000);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                String post_data = URLEncoder.encode("send","UTF-8") + "=" + URLEncoder.encode(send,"UTF-8") + "&"
+                        + URLEncoder.encode("receive","UTF-8") + "=" + URLEncoder.encode(receive,"UTF-8")  + "&"
+                        + URLEncoder.encode("message","UTF-8") + "=" + URLEncoder.encode(message,"UTF-8")  + "&"
+                        + URLEncoder.encode("date","UTF-8") + "=" + URLEncoder.encode(date,"UTF-8");
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                String result="";
+                String line="";
+
+                //line = bufferedReader.readLine();
+                //result+=line;
+
+                while( (line = bufferedReader.readLine()) != null)
+                {
+                    result += line;
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+    }
+
+    ////--------------------------------------------------------------------------------------------------------------
+    //댓글 삽입
+    class CommentTask extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+        CommentTask(Context ctx)
+        {
+            context=ctx;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+
+            if(result.equals("1"))
+            {
+                //Toast.makeText(BookClickActivity.this,"성공",Toast.LENGTH_SHORT).show();
+            }else
+            {
+            }
+
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            long now = System.currentTimeMillis();
+            Date d = new Date(now);
+            SimpleDateFormat s = new SimpleDateFormat("yyyyMMdd");
+            String date = s.format(d);
+
+            String login_url = "http://" + Basicinfo.URL + "/insertcomment.php";
+
+            try
+            {
+                String title = params[0];
+                String content = params[1];
+                String id = params[2];
+                String wid = params[3];
+                String com = params[4];
+                URL url =new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                //httpURLConnection.setConnectTimeout(8000);
+                //httpURLConnection.setReadTimeout(8000);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                String post_data = URLEncoder.encode("title","UTF-8") + "=" + URLEncoder.encode(title,"UTF-8") + "&"
+                        + URLEncoder.encode("content","UTF-8") + "=" + URLEncoder.encode(content,"UTF-8")  + "&"
+                        + URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8")  + "&"
+                        + URLEncoder.encode("wid","UTF-8") + "=" + URLEncoder.encode(wid,"UTF-8")  + "&"
+                        + URLEncoder.encode("com","UTF-8") + "=" + URLEncoder.encode(com,"UTF-8")  + "&"
+                        + URLEncoder.encode("date","UTF-8") + "=" + URLEncoder.encode(date,"UTF-8");
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                String result="";
+                String line="";
+
+                //line = bufferedReader.readLine();
+                //result+=line;
+
+                while( (line = bufferedReader.readLine()) != null)
+                {
+                    result += line;
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+    }
+
+    ////--------------------------------------------------------------------------------------------------------------
+    //신고하기
+    class ReportTask extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+        ReportTask(Context ctx)
+        {
+            context=ctx;
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+
+            if(result.equals("1"))
+            {
+                //Toast.makeText(BookClickActivity.this,"성공",Toast.LENGTH_SHORT).show();
+            }else
+            {
+            }
+
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            String login_url = "http://" + Basicinfo.URL + "/insertreport.php";
+
+            try
+            {
+
+                String sid = params[0];
+                String wid = params[1];
+                String title = params[2];
+                String content = params[3];
+                String date = params[4];
+                URL url =new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                //httpURLConnection.setConnectTimeout(8000);
+                //httpURLConnection.setReadTimeout(8000);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                String post_data = URLEncoder.encode("sid","UTF-8") + "=" + URLEncoder.encode(sid,"UTF-8") + "&"
+                        + URLEncoder.encode("wid","UTF-8") + "=" + URLEncoder.encode(wid,"UTF-8")  + "&"
+                        + URLEncoder.encode("title","UTF-8") + "=" + URLEncoder.encode(title,"UTF-8")  + "&"
+                        + URLEncoder.encode("content","UTF-8") + "=" + URLEncoder.encode(content,"UTF-8")  + "&"
+                        + URLEncoder.encode("date","UTF-8") + "=" + URLEncoder.encode(date,"UTF-8");
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                String result="";
+                String line="";
+
+                //line = bufferedReader.readLine();
+                //result+=line;
+
+                while( (line = bufferedReader.readLine()) != null)
+                {
+                    result += line;
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+    }
+
 
 
     @Override

@@ -146,9 +146,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                 mId = kid.getText().toString();
                 mPw = kpwd.getText().toString();
-                LoginTask t = new LoginTask(RegisterActivity.this);
-                t.execute("check");
-
+                LoginTask t = new LoginTask();
+                t.execute();
 
             }
         });
@@ -262,28 +261,58 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    class LoginTask extends AsyncTask<String, Void, String> {
 
-        AlertDialog alertDialog;
-        Context context;
-
-        LoginTask(Context ctx) {
-            context = ctx;
-        }
-
+    private class LoginTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
+            super.onPreExecute();
+            //asyncDialog = new ProgressDialog(MainActivity.this);
+            //asyncDialog.setMessage("로딩중입니다..");
+            //Toast.makeText(MainActivity.this,"Loading",Toast.LENGTH_SHORT).show();
+            //asyncDialog.show();
+
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected Void doInBackground(Void... arg0) {
 
-            //result.equals("1")
-            if(true)//됬을경우 -> 모바일은 되는데 애뮬은 안됨
+            try
             {
-                Toast t =Toast.makeText(RegisterActivity.this,"인증되었습니다",Toast.LENGTH_SHORT);
-                t.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
+                Connection.Response res= Jsoup.connect(htmlTestUrl)
+                        .data("user.usr_id",mId)
+                        .data("user.passwd",mPw)
+                        .method(Connection.Method.POST)
+                        .execute();
+
+                Map<String, String> loginCookies=res.cookies();
+
+                Document doc = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/main/main.action").cookies(loginCookies).get();
+                if(doc.toString().contains("//게시물")) {
+
+                    loginCheck = !loginCheck;
+
+                    Document doc2 = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/stud/infoMngt/basisMngt/list.action").cookies(loginCookies).get();
+
+                }
+
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            super.onPostExecute(result);
+
+            if(loginCheck) {
+
+                Toast t = Toast.makeText(RegisterActivity.this, "인증되었습니다", Toast.LENGTH_SHORT);
+                t.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL, 0, 0);
                 t.show();
 
                 id.setVisibility(View.VISIBLE);
@@ -291,52 +320,11 @@ public class RegisterActivity extends AppCompatActivity {
                 register.setVisibility(View.VISIBLE);
                 email.setVisibility(View.VISIBLE);
                 checkID.setVisibility(View.VISIBLE);
-
             }
-
+            else
+                Toast.makeText(RegisterActivity.this,  "id, password을 다시 확인하세요.", Toast.LENGTH_SHORT).show();
 
         }
-
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String type = params[0];
-            String x = "0";
-
-            if (type.equals("check")) {
-                try
-                {
-
-                    Connection.Response res = Jsoup.connect("https://my.knu.ac.kr/stpo/comm/support/loginPortal/login.action?redirUrl=%2Fstpo%2Fstpo%2Fmain%2Fmain.action")
-                        .data("user.usr_id", "sungwon126")
-                        .data("user.passwd", "monkey1261!")
-                        .method(Connection.Method.POST)
-                        .execute();
-
-
-                    Map<String, String> loginCookies = res.cookies();
-
-                    Document doc = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/main/main.action").cookies(loginCookies).get();
-
-                    if (doc.toString().contains("//게시물"))
-                    {
-                        loginCheck = !loginCheck;
-                    }
-
-                    x="1";
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return x;
-        }
-
     }
 
 

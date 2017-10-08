@@ -48,7 +48,7 @@ import java.util.List;
 /**
  * Created by sungw on 2017-08-30.
  */
-//자유게시판 메인
+//경북대 숲 메인
 public class FreeMainActivity extends AppCompatActivity {
 
 
@@ -106,10 +106,6 @@ public class FreeMainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-//        MyAdapter adapter = new MyAdapter(this,initData());
-//        adapter.setParentClickableViewAnimationDefaultDuration();
-//        adapter.setParentAndIconExpandOnClick(true);
-//        recyclerView.setAdapter(adapter);
 
         FreeMainActivity.GetDataJSON b = new FreeMainActivity.GetDataJSON();
         b.execute("http://" + Basicinfo.URL + "/getfreetitle.php");
@@ -190,6 +186,9 @@ public class FreeMainActivity extends AppCompatActivity {
                 }else if(id.equals("Log out"))
                 {
                     number =7;
+                }else if(id.equals("관리"))
+                {
+                    number = 8;
                 }
 
                 pageChange(number);
@@ -200,30 +199,6 @@ public class FreeMainActivity extends AppCompatActivity {
 
     }
 
-    private void initData()
-    {
-//        TitleCreator titleCreator = TitleCreator.get(this);
-//        //List<TitleParent> titles = titleCreator.getAll();
-//        titleCreator._titleParents = new ArrayList<>();
-//        for(int i=1;i<100;i++)
-//        {
-//            TitleParent title = new TitleParent("ss");
-//            titleCreator._titleParents.add(title);
-//        }
-//
-//
-//        List<TitleParent> titles = titleCreator._titleParents;
-//
-//        List<ParentObject> parentObject = new ArrayList<>();
-//        for(TitleParent title : titles)
-//        {
-//            List<Object> childList = new ArrayList<>();
-//            childList.add(new TitleChild("Add to Contact","send Message"));
-//            title.setChildObjectList(childList);
-//            parentObject.add(title);
-//        }
-//        return parentObject;
-    }
 
     //page넘기기 위함
     private void pageChange(int a)
@@ -238,7 +213,7 @@ public class FreeMainActivity extends AppCompatActivity {
 
         }else if(a==3)//동아리
         {
-
+            startActivity(new Intent(this,FreeMainActivity.class));
         }else if(a==4)//자유
         {
             startActivity(new Intent(this,FreeMainActivity.class));
@@ -252,8 +227,10 @@ public class FreeMainActivity extends AppCompatActivity {
         }else if(a==7)
         {
             startActivity(new Intent(this,LoginActivity.class));
+        }else if(a==8)
+        {
+            startActivity(new Intent(this,SettingActivity.class));
         }
-
     }
 
     //순차 뽑아오기

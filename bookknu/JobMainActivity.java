@@ -121,6 +121,9 @@ public class JobMainActivity  extends AppCompatActivity{
                 }else if(id.equals("Log out"))
                 {
                     number =7;
+                }else if(id.equals("관리"))
+                {
+                    number =8;
                 }
 
                 pageChange(number);
@@ -143,7 +146,7 @@ public class JobMainActivity  extends AppCompatActivity{
 
         }else if(a==3)//동아리
         {
-
+            startActivity(new Intent(this,ClubMainActivity.class));
         }else if(a==4)//자유
         {
             startActivity(new Intent(this,FreeMainActivity.class));
@@ -155,6 +158,9 @@ public class JobMainActivity  extends AppCompatActivity{
         {
             startActivity(new Intent(this,MessageActivity.class));
         }else if(a==7)
+        {
+            startActivity(new Intent(this,LoginActivity.class));
+        }else if(a==8)
         {
             startActivity(new Intent(this,LoginActivity.class));
         }

@@ -105,13 +105,6 @@ public class BookClickActivity extends AppCompatActivity{
         noticeList =  new ArrayList<Comment>();
         adapter = new CommentListAdapter(getApplicationContext(),noticeList);
 
-        //noticeList.add(new Comment("  굿!","홍길동","2017-06-20"));
-        //noticeList.add(new Comment("  감사합니다","홍길동","2017-06-05"));
-        //noticeList.add(new Comment("  감사합니다","홍길동","2017-06-04"));
-
-        //adapter = new CommentListAdapter(getApplicationContext(),noticeList);
-        //commentListView.setAdapter(adapter);
-
         //댓글 뿌리기 위함
         BookClickActivity.GetDataJSON1 s = new BookClickActivity.GetDataJSON1();
         s.execute();
@@ -119,9 +112,6 @@ public class BookClickActivity extends AppCompatActivity{
         //조회수 가져오기 및 조회수 1증가
         BookClickActivity.GetCount ge = new BookClickActivity.GetCount();
         ge.execute();
-
-
-
 
         //-----------------------------------------------------------------------------------------------------------------
         //댓글쓰기
@@ -218,63 +208,63 @@ public class BookClickActivity extends AppCompatActivity{
 
             String login_url = "http://" + Basicinfo.URL + "/insertcomment.php";
 
-                try
+            try
+            {
+                String title = params[0];
+                String content = params[1];
+                String id = params[2];
+                String wid = params[3];
+                String com = params[4];
+                URL url =new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                //httpURLConnection.setConnectTimeout(8000);
+                //httpURLConnection.setReadTimeout(8000);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                String post_data = URLEncoder.encode("title","UTF-8") + "=" + URLEncoder.encode(title,"UTF-8") + "&"
+                        + URLEncoder.encode("content","UTF-8") + "=" + URLEncoder.encode(content,"UTF-8")  + "&"
+                        + URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8")  + "&"
+                        + URLEncoder.encode("wid","UTF-8") + "=" + URLEncoder.encode(wid,"UTF-8")  + "&"
+                        + URLEncoder.encode("com","UTF-8") + "=" + URLEncoder.encode(com,"UTF-8")  + "&"
+                        + URLEncoder.encode("date","UTF-8") + "=" + URLEncoder.encode(date,"UTF-8");
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                String result="";
+                String line="";
+
+                //line = bufferedReader.readLine();
+                //result+=line;
+
+                while( (line = bufferedReader.readLine()) != null)
                 {
-                    String title = params[0];
-                    String content = params[1];
-                    String id = params[2];
-                    String wid = params[3];
-                    String com = params[4];
-                    URL url =new URL(login_url);
-                    HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-                    //httpURLConnection.setConnectTimeout(8000);
-                    //httpURLConnection.setReadTimeout(8000);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String post_data = URLEncoder.encode("title","UTF-8") + "=" + URLEncoder.encode(title,"UTF-8") + "&"
-                            + URLEncoder.encode("content","UTF-8") + "=" + URLEncoder.encode(content,"UTF-8")  + "&"
-                            + URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8")  + "&"
-                            + URLEncoder.encode("wid","UTF-8") + "=" + URLEncoder.encode(wid,"UTF-8")  + "&"
-                            + URLEncoder.encode("com","UTF-8") + "=" + URLEncoder.encode(com,"UTF-8")  + "&"
-                            + URLEncoder.encode("date","UTF-8") + "=" + URLEncoder.encode(date,"UTF-8");
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-                    outputStream.close();
-
-                    InputStream inputStream = null;
-                    inputStream = httpURLConnection.getInputStream();
-
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-
-                    String result="";
-                    String line="";
-
-                    //line = bufferedReader.readLine();
-                    //result+=line;
-
-                    while( (line = bufferedReader.readLine()) != null)
-                    {
-                        result += line;
-                    }
-
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                    return result;
-
-                }catch(MalformedURLException e)
-                {
-                    e.printStackTrace();
-                }catch (IOException e)
-                {
-                    e.printStackTrace();
+                    result += line;
                 }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
 
 
             return null;
@@ -512,67 +502,63 @@ public class BookClickActivity extends AppCompatActivity{
 
             String url1 = "http://" + Basicinfo.URL + "/incount.php";
 
-                try
+            try
+            {
+                String result="";
+                String line="";
+
+                String id = params[0];
+                String title = params[1];
+                String content = params[2];
+                String sub = params[3];
+
+                URL url =new URL(url1);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"utf-8"));
+
+                String post_data = URLEncoder.encode("id","utf-8") + "=" + URLEncoder.encode(id,"utf-8") + "&"
+                        + URLEncoder.encode("title","utf-8") + "=" + URLEncoder.encode(title,"utf-8") + "&"
+                        + URLEncoder.encode("content","utf-8") + "=" + URLEncoder.encode(content,"utf-8")+ "&"
+                        + URLEncoder.encode("sub","utf-8") + "=" + URLEncoder.encode(sub,"utf-8");
+
+
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                result = "g";
+                //line = bufferedReader.readLine();
+                //result+=line;
+
+                while( (line = bufferedReader.readLine()) != null)
                 {
-
-                    String result="";
-                    String line="";
-
-
-                    String id = params[0];
-                    String title = params[1];
-                    String content = params[2];
-                    String sub = params[3];
-
-                    URL url =new URL(url1);
-                    HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-                    //httpURLConnection.setConnectTimeout(8000);
-                    //httpURLConnection.setReadTimeout(8000);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"utf-8"));
-
-                    String post_data = URLEncoder.encode("id","utf-8") + "=" + URLEncoder.encode(id,"utf-8") + "&"
-                            + URLEncoder.encode("title","utf-8") + "=" + URLEncoder.encode(title,"utf-8") + "&"
-                            + URLEncoder.encode("content","utf-8") + "=" + URLEncoder.encode(content,"utf-8")+ "&"
-                            + URLEncoder.encode("sub","utf-8") + "=" + URLEncoder.encode(sub,"utf-8");
-
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-                    outputStream.close();
-
-
-                    InputStream inputStream = null;
-                    inputStream = httpURLConnection.getInputStream();
-
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-
-                    result = "g";
-                    //line = bufferedReader.readLine();
-                    //result+=line;
-
-                    while( (line = bufferedReader.readLine()) != null)
-                    {
-                        result += line;
-                    }
-
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                    return result;
-
-                }catch(MalformedURLException e)
-                {
-                    e.printStackTrace();
-                }catch (IOException e)
-                {
-                    e.printStackTrace();
+                    result += line;
                 }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
 
             return null;
 
@@ -584,14 +570,6 @@ public class BookClickActivity extends AppCompatActivity{
         }
 
     }
-
-
-
-
-
-
-
-
 
 
     //-------------------------------------------------------------------------------------------------------------------------
@@ -629,11 +607,11 @@ public class BookClickActivity extends AppCompatActivity{
         protected void onPostExecute(String result) {
 
             countJSON = result;
-            //Toast.makeText(BookMainActivity.this,result,Toast.LENGTH_SHORT).show();
             getBoard();
         }
-
     }
+
+
 
     //조회수 가져오기 실행
     public void getBoard()
