@@ -3,6 +3,7 @@ package myhome.bookknu;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +26,10 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -55,8 +60,15 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
 
     private int number;
 
+    private String myJSON;
+    private JSONArray wifi_state = null;
+
+    private static final String TAG_RESULTS = "result";
+    private static final String TAG_ID = "id";
+    private static final String TAG_STATE = "ustatus";
+
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {//설정
 
         Wifi w = new Wifi(this);
         if(isChecked)
@@ -88,6 +100,9 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         wifi_check = (Switch)findViewById(R.id.wifi_check);
+
+        SettingActivity.Wifi_State s = new SettingActivity.Wifi_State(this);
+        s.execute(Basicinfo.name);
 
         String[] stringList = {"신고 현황","로그인 차단","메시지 차단"};
         listAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,stringList);
@@ -255,6 +270,117 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
 
 
             return null;
+        }
+    }
+
+
+    class Wifi_State extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+        Wifi_State(Context ctx)
+        {
+            context=ctx;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            alertDialog  = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Login status");
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            myJSON = result;
+            checkWIFI();
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String login_url = "http://" + Basicinfo.URL + "/getwifi.php";
+
+            try
+            {
+
+                String id = params[0];
+                URL url =new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                String post_data = URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8") ;
+
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                String result="";
+                String line="";
+
+                while( (line = bufferedReader.readLine()) != null)
+                {
+                    result += line;
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+    }
+
+    public void checkWIFI()
+    {
+        //test---------------------------------------------------------------------------------------
+
+        try{
+            JSONObject jsonObj = new JSONObject(myJSON);
+            wifi_state = jsonObj.getJSONArray(TAG_RESULTS);
+            String state;
+
+            JSONObject c = wifi_state.getJSONObject(0);
+            state = c.getString(TAG_STATE);
+
+            if(state.equals("on"))
+            {
+                wifi_check.setChecked(true);
+            }else
+            {
+                wifi_check.setChecked(false);
+            }
+
+        }catch (JSONException e)
+        {
+            e.printStackTrace();
         }
     }
 

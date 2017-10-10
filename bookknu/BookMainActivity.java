@@ -146,18 +146,11 @@ public class BookMainActivity extends AppCompatActivity {
                     number =8;
                 }
 
-
                 pageChange(number);
                 return false;
             }
         });
 
-
-
-        //-------------------------------------------------------------------------------------------
-        //listview에 값뿌려주기위함
-//        BookMainActivity.GetDataJSON b = new BookMainActivity.GetDataJSON();
-//        b.execute("http://" + Basicinfo.URL + "/getcontent.php");
 
         //-------------------------------------------------------------------------------------------
         bookListView = (ListView)findViewById(R.id.booklist);

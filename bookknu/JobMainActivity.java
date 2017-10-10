@@ -162,7 +162,7 @@ public class JobMainActivity  extends AppCompatActivity{
             startActivity(new Intent(this,LoginActivity.class));
         }else if(a==8)
         {
-            startActivity(new Intent(this,LoginActivity.class));
+            startActivity(new Intent(this,SettingActivity.class));
         }
     }
 
