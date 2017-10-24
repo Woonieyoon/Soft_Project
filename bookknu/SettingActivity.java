@@ -104,14 +104,21 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
         SettingActivity.Wifi_State s = new SettingActivity.Wifi_State(this);
         s.execute(Basicinfo.name);
 
-        String[] stringList = {"신고 현황","로그인 차단","메시지 차단"};
+        String[] stringList = {"신고 현황","로그인 차단관리","글쓰기 차단관리"};
         listAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,stringList);
         listView = (ListView)findViewById(R.id.reportlistview);
         listView.setAdapter(listAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
+
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+
                 switch (position)
                 {
                     case 0://신고현황
@@ -119,12 +126,14 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
                         startActivity(n);
                         break;
 
-                    case 1://로그인 차단
-
+                    case 1://로그인 차단관리
+                        Intent n1 = new Intent(SettingActivity.this,LoginCut.class);
+                        startActivity(n1);
                         break;
 
                     case 2://메시지 차단
-
+                        Intent n2 = new Intent(SettingActivity.this,MessageCut.class);
+                        startActivity(n2);
                         break;
 
                 }
@@ -260,13 +269,13 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
                 httpURLConnection.disconnect();
                 return result;
 
-            }catch(MalformedURLException e)
-            {
-                e.printStackTrace();
-            }catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+                }catch(MalformedURLException e)
+                {
+                    e.printStackTrace();
+                }catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
 
 
             return null;
@@ -358,6 +367,7 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
         }
     }
 
+
     public void checkWIFI()
     {
         //test---------------------------------------------------------------------------------------
@@ -420,7 +430,7 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
             startActivity(new Intent(this,LoginActivity.class));
         }else if(a==8)
         {
-            startActivity(new Intent(this,LoginActivity.class));
+            startActivity(new Intent(this,SettingActivity.class));
         }
     }
 

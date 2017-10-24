@@ -152,7 +152,7 @@ public class BookMainActivity extends AppCompatActivity {
         });
 
 
-        //-------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------
         bookListView = (ListView)findViewById(R.id.booklist);
         button = (Button)findViewById(R.id.toButton);
         search = (EditText)findViewById(R.id.search_edit);
@@ -203,8 +203,15 @@ public class BookMainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent i = new Intent(BookMainActivity.this,BookInsertActivity.class);
-                startActivity(i);
+                if(Basicinfo.po_writing.equals("off"))
+                {
+                    Toast.makeText(BookMainActivity.this,"글쓰기 제한",Toast.LENGTH_SHORT).show();
+                }else
+                {
+                    Intent i = new Intent(BookMainActivity.this,BookInsertActivity.class);
+                    startActivity(i);
+                }
+
             }
         });
 
@@ -223,6 +230,7 @@ public class BookMainActivity extends AppCompatActivity {
                 CharSequence info[] = new CharSequence[] {"Message 보내기", "글읽기" , "신고하기" };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(BookMainActivity.this);
+
                 builder.setTitle("선택하세요!!");
                 builder.setIcon(R.drawable.knu);
 
@@ -284,7 +292,7 @@ public class BookMainActivity extends AppCompatActivity {
 
                             case 2: //신고하기
                                 BookMainActivity.ReportTask r = new BookMainActivity.ReportTask(BookMainActivity.this);
-                                r.execute(Basicinfo.name,nname,ntitle,ncontent,ndate);
+                                r.execute(Basicinfo.name,nname,ntitle,ncontent,ndate,"off"); //off는 읽지 않았다는 말
                                 break;
                         }
                         dialog.dismiss();
@@ -677,10 +685,9 @@ public class BookMainActivity extends AppCompatActivity {
                 Toast.makeText(BookMainActivity.this,"성공",Toast.LENGTH_SHORT).show();
             }else
             {
+
             }
-
         }
-
 
         @Override
         protected void onProgressUpdate(Void... values) {
@@ -913,6 +920,7 @@ public class BookMainActivity extends AppCompatActivity {
                 String title = params[2];
                 String content = params[3];
                 String date = params[4];
+                String state = params[5];
                 URL url =new URL(login_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
@@ -928,7 +936,8 @@ public class BookMainActivity extends AppCompatActivity {
                         + URLEncoder.encode("wid","UTF-8") + "=" + URLEncoder.encode(wid,"UTF-8")  + "&"
                         + URLEncoder.encode("title","UTF-8") + "=" + URLEncoder.encode(title,"UTF-8")  + "&"
                         + URLEncoder.encode("content","UTF-8") + "=" + URLEncoder.encode(content,"UTF-8")  + "&"
-                        + URLEncoder.encode("date","UTF-8") + "=" + URLEncoder.encode(date,"UTF-8");
+                        + URLEncoder.encode("date","UTF-8") + "=" + URLEncoder.encode(date,"UTF-8") + "&"
+                        + URLEncoder.encode("state","UTF-8") + "=" + URLEncoder.encode(state,"UTF-8");
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();
                 bufferedWriter.close();

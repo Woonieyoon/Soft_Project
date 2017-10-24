@@ -137,9 +137,7 @@ public class FreeMainActivity extends AppCompatActivity {
                         FreeMainActivity.myGetDataJSON start = new FreeMainActivity.myGetDataJSON();
                         start.execute("http://" + Basicinfo.URL + "/getfreenum.php");
 
-
                         ad.dismiss();
-
 
                     }
                 });

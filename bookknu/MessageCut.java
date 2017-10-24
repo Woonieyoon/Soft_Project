@@ -8,12 +8,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,58 +32,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by sungw on 2017-09-30.
+ * Created by sungw on 2017-10-22.
  */
 
-//신고보기
+public class MessageCut extends AppCompatActivity {
 
-public class ReportStateActivity extends AppCompatActivity {
-
-    private ListView reportListView;
-    private ReportAdapter adapter;
-    private List<Report> reportList;
-
-    private static final String TAG_RRESULTS = "result";
-    private static final String TAG_RSID = "sid";
-    private static final String TAG_RWID = "wid";
-    private static final String TAG_RTITLE = "title";
-    private static final String TAG_RCONTENT = "content";
-    private static final String TAG_RDATE = "date";
-    private static final String TAG_RSTATE = "state";
+    private ListView cutListView;
+    private CutAdapter adapter;
+    private List<Cut> cutList;
 
     private String myJSON;
     private JSONArray data = null;
 
-    private View layout;
-    private AlertDialog ad;
-
-
-
+    private static final String TAG_CRESULTS = "result";
+    private static final String TAG_CID = "id";
+    private static final String TAG_CLOGIN = "login";
+    private static final String TAG_CWRITING = "writing";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.reportstate);
-        reportListView = (ListView) findViewById(R.id.report_statelistview);
-        reportList = new ArrayList<Report>();
-        adapter = new ReportAdapter(getApplicationContext(), reportList); //원래
 
-        ReportStateActivity.getReport g = new ReportStateActivity.getReport();
-        g.execute();
+        setContentView(R.layout.cutstate);
+        cutListView = (ListView)findViewById(R.id.cut_statelistview);
+        cutList = new ArrayList<Cut>();
+        adapter = new CutAdapter(getApplicationContext(), cutList);
 
-        reportListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        MessageCut.getCut c = new MessageCut.getCut();
+        c.execute();
+
+        cutListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final String ndate = ((Report) adapter.getItem(position)).getDate();  //날짜
-                final String nsname = ((Report) adapter.getItem(position)).getSname(); //신고인
-                final String nwname = ((Report) adapter.getItem(position)).getWname();  //작성자
-                final String ntitle = ((Report) adapter.getItem(position)).getTitle(); //제목
-                final String ncontent = ((Report) adapter.getItem(position)).getContent(); //내용
+                final String name = ((Cut) adapter.getItem(position)).getCname();  //날짜
 
-                CharSequence info[] = new CharSequence[]{"자세히 보기", "로그인 차단", "글쓰기 차단"};
+                CharSequence info[] = new CharSequence[]{"메시지 차단해제"};
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(ReportStateActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MessageCut.this);
 
                 builder.setTitle("선택하세요!!");
                 builder.setIcon(R.drawable.knu);
@@ -95,45 +78,30 @@ public class ReportStateActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         switch (which) {
-                            case 0: //자세히 보기
-
-                                Intent n_click = new Intent(ReportStateActivity.this,ReportClickReadActivity.class);
-                                n_click.putExtra("sname",nsname);
-                                n_click.putExtra("name",nwname);
-                                n_click.putExtra("title",ntitle);
-                                n_click.putExtra("content",ncontent);
-                                n_click.putExtra("date",ndate);
-                                startActivity(n_click);
+                            case 0://차단해제
+                                MessageCut.MessageRelease l = new MessageCut.MessageRelease(MessageCut.this);
+                                l.execute(name,"on");
                                 break;
 
-                            case 1: //로그인 차단
-
-                                ReportStateActivity.Authority r = new ReportStateActivity.Authority(ReportStateActivity.this);
-                                r.execute( "http://" + Basicinfo.URL + "/authority.php",nwname,"off");
-
-                                break;
-
-                            case 2: //글쓰기 차단
-
-                                ReportStateActivity.Authority w = new ReportStateActivity.Authority(ReportStateActivity.this);
-                                w.execute( "http://" + Basicinfo.URL + "/authoritywriting.php",nwname,"off");
-
-                                break;
                         }
                         dialog.dismiss();
+                        Intent s = new Intent(MessageCut.this,MessageCut.class);
+                        startActivity(s);
+                        finish();
                     }
                 });
 
                 builder.show();
-
             }
         });
+
+
+
     }
 
-
-    class getReport extends AsyncTask<Void,Void,String>
+    class getCut extends AsyncTask<Void,Void,String> //값 가져오기
     {
-        public getReport() {
+        public getCut() {
             super();
         }
 
@@ -151,7 +119,7 @@ public class ReportStateActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... params) {
-            String uri = "http://" + Basicinfo.URL + "/getreport.php";
+            String uri = "http://" + Basicinfo.URL + "/getCut.php";
             BufferedReader bufferedReader = null;
 
             try {
@@ -179,29 +147,23 @@ public class ReportStateActivity extends AppCompatActivity {
         //test---------------------------------------------------------------------------------------
         try{
             JSONObject jsonObj = new JSONObject(myJSON);
-            data = jsonObj.getJSONArray(TAG_RRESULTS);
+            data = jsonObj.getJSONArray(TAG_CRESULTS);
 
             for(int i=0; i< data.length(); i++)
             {
                 JSONObject c = data.getJSONObject(i);
-                String sid = c.getString(TAG_RSID);
-                String wid = c.getString(TAG_RWID);
-                String title = c.getString(TAG_RTITLE);
-                String content = c.getString(TAG_RCONTENT);
-                String date = c.getString(TAG_RDATE);
-                String state = c.getString(TAG_RSTATE);
+                String cid = c.getString(TAG_CID);
+                String clogin = c.getString(TAG_CLOGIN);
+                String cwriting = c.getString(TAG_CWRITING);
 
 
-                if(state.equals("off"))//state가 off 일때
+                if(cwriting.equals("off"))//state가 off 일때
                 {
-                    reportList.add(new Report(0,sid,wid,title,content,date));
-                }else //state가 on 일때
-                {
-                    reportList.add(new Report(1,sid,wid,title,content,date));
+                    cutList.add(new Cut(cid));
                 }
             }
 
-            reportListView.setAdapter(adapter);
+            cutListView.setAdapter(adapter);
 
         }catch (JSONException e)
         {
@@ -209,12 +171,12 @@ public class ReportStateActivity extends AppCompatActivity {
         }
     }
 
-    //메시지 및 로그인 차단
-    class Authority extends AsyncTask<String, Void, String> {
+    // 차단해제
+    class MessageRelease extends AsyncTask<String, Void, String> {
 
         AlertDialog alertDialog;
         Context context;
-        Authority(Context ctx)
+        MessageRelease(Context ctx)
         {
             context=ctx;
         }
@@ -229,7 +191,7 @@ public class ReportStateActivity extends AppCompatActivity {
 
             if(result.equals("1"))
             {
-                //Toast.makeText(BookClickActivity.this,"성공",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MessageCut.this,"성공",Toast.LENGTH_SHORT).show();
             }else
             {
             }
@@ -246,13 +208,13 @@ public class ReportStateActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
 
 
-            String login_url =params[0];
+            String login_url ="http://" + Basicinfo.URL + "/Mecutrelease.php";
 
             try
             {
 
-                String id = params[1];
-                String ustate = params[2];
+                String id = params[0];
+                String writing = params[1];
 
                 URL url =new URL(login_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
@@ -266,7 +228,7 @@ public class ReportStateActivity extends AppCompatActivity {
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
                 String post_data = URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8") + "&"
-                        + URLEncoder.encode("ustate","UTF-8") + "=" + URLEncoder.encode(ustate,"UTF-8");
+                        + URLEncoder.encode("writing","UTF-8") + "=" + URLEncoder.encode(writing,"UTF-8");
 
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();
@@ -306,7 +268,6 @@ public class ReportStateActivity extends AppCompatActivity {
             return null;
         }
     }
-
 
 
 }

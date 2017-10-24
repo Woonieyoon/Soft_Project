@@ -50,9 +50,22 @@ public class LoginActivity extends AppCompatActivity {
     private String myJSON;
     JSONArray wifi_state = null;
 
+    private String myAJSON;
+    JSONArray auth_state = null;
+
     private static final String TAG_RESULTS = "result";
     private static final String TAG_ID = "id";
     private static final String TAG_STATE = "ustatus";
+
+
+    private static final String TAG_AID = "id";
+    private static final String TAG_ALogin = "login";
+    private static final String TAG_AWriting = "writing";
+
+    private String myWSON;
+    private JSONArray data = null;
+
+
 
     String type;
     String id,pwd;
@@ -119,8 +132,10 @@ public class LoginActivity extends AppCompatActivity {
 
             if(result.equals("1")) //login 성공
             {
-                LoginActivity.Wifi_State s = new LoginActivity.Wifi_State(LoginActivity.this);
-                s.execute(Basicinfo.name);
+                Basicinfo.name = id;
+                //login 가능성 check
+                LoginActivity.GetAuth g = new LoginActivity.GetAuth(LoginActivity.this);
+                g.execute(id);
 
             }else
             {
@@ -314,9 +329,126 @@ public class LoginActivity extends AppCompatActivity {
 
             }else
             {
+                //글쓰기 possibility
+                CheckPro p = new CheckPro(LoginActivity.this);
+                p.execute(Basicinfo.name);
                 Intent book = new Intent(LoginActivity.this,BookMainActivity.class);
                 LoginActivity.this.startActivity(book);
             }
+
+        }catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    class GetAuth extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+        GetAuth(Context ctx)
+        {
+            context=ctx;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            alertDialog  = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Login status");
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            myAJSON = result;
+            checkAuth();
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String login_url = "http://" + Basicinfo.URL + "/getAuth.php";
+
+            try
+            {
+
+                String id = params[0];
+                URL url =new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                String post_data = URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8") ;
+
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                String result="";
+                String line="";
+
+                while( (line = bufferedReader.readLine()) != null)
+                {
+                    result += line;
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+    }
+
+    public void checkAuth()
+    {
+        //test---------------------------------------------------------------------------------------
+
+        try{
+            JSONObject jsonObj = new JSONObject(myAJSON);
+            auth_state = jsonObj.getJSONArray(TAG_RESULTS);
+
+
+            JSONObject c = auth_state.getJSONObject(0);
+            String id = c.getString(TAG_AID);
+            String login = c.getString(TAG_ALogin);
+            String writing = c.getString(TAG_AWriting);
+
+            if(login.equals("off")){
+                Toast.makeText(LoginActivity.this,"로그인이 차단되었습니다.",Toast.LENGTH_SHORT).show();
+            }else //login이 가능 - > wifi check
+            {
+                LoginActivity.Wifi_State s = new LoginActivity.Wifi_State(LoginActivity.this); //wifi check
+                s.execute(Basicinfo.name);
+            }
+
 
         }catch (JSONException e)
         {
@@ -385,4 +517,112 @@ public class LoginActivity extends AppCompatActivity {
         return false;
     }
 
+    // 글쓰기 여부
+    class CheckPro extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+        CheckPro(Context ctx)
+        {
+            context=ctx;
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+
+            myWSON = result;
+            try
+            {
+                JSONObject jsonObj = new JSONObject(myWSON);
+                data = jsonObj.getJSONArray(TAG_RESULTS);
+
+                for(int i=0; i< data.length(); i++)
+                {
+                    JSONObject c = data.getJSONObject(i);
+                    String cid = c.getString(TAG_AID);
+                    String clogin = c.getString(TAG_ALogin);
+                    String cwriting = c.getString(TAG_AWriting);
+
+                    Basicinfo.po_writing = cwriting;
+
+                }
+
+            Toast.makeText(LoginActivity.this,Basicinfo.po_writing,Toast.LENGTH_SHORT).show();
+
+
+
+            }catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+
+
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            String login_url ="http://" + Basicinfo.URL + "/writepossibility.php";
+
+            try
+            {
+
+                String id = params[0];
+                URL url =new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                String post_data = URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8");
+
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                String result="";
+                String line="";
+
+                while( (line = bufferedReader.readLine()) != null)
+                {
+                    result += line;
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
 }
