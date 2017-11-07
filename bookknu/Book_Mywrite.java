@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,15 +37,17 @@ import java.util.List;
  * Created by sungw on 2017-08-11.
  */
 //자신이 쓴글 보기
-public class Book_Mywrite extends AppCompatActivity {
+public class Book_Mywrite extends AppCompatActivity implements View.OnClickListener{
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private Toolbar mToolbar;
 
     private ListView mybookListView;
-    private BookListAdapter myadapter;
+    private MyBookListAdapter myadapter;
     private List<Book> mynoticeList;
+
+    private Button book,job,club,free;
 
     String myJSON1;
     private static final String MyTAG_RESULTS = "result";
@@ -74,6 +77,17 @@ public class Book_Mywrite extends AppCompatActivity {
         mToggle.syncState();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        book = (Button)findViewById(R.id.mybookbtn);
+        job = (Button)findViewById(R.id.myjobbtn);
+        club = (Button)findViewById(R.id.mycirclebtn);
+        free = (Button)findViewById(R.id.myfreebtn);
+        book.setOnClickListener(this);
+        job.setOnClickListener(this);
+        club.setOnClickListener(this);
+        free.setOnClickListener(this);
+        book.setSelected(true);
+
 
         NavigationView n = (NavigationView)findViewById(R.id.nav_view);
         n.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -114,7 +128,7 @@ public class Book_Mywrite extends AppCompatActivity {
 
         mybookListView = (ListView)findViewById(R.id.mybooklist);
         mynoticeList =  new ArrayList<Book>();
-        myadapter = new BookListAdapter(getApplicationContext(),mynoticeList);
+        myadapter = new MyBookListAdapter(getApplicationContext(),mynoticeList);
 
         Book_Mywrite.myGetDataJSON start = new Book_Mywrite.myGetDataJSON();
         start.execute("http://" + Basicinfo.URL + "/getcontent.php");
@@ -178,55 +192,7 @@ public class Book_Mywrite extends AppCompatActivity {
     }
 
 
-
-
-
-
-
-
-
-    //데이터게시판 뿌리기 위함
-    public void insertBoard()
-    {
-        //test---------------------------------------------------------------------------------------
-
-        try{
-            JSONObject jsonObj = new JSONObject(myJSON1);
-            mydata = jsonObj.getJSONArray(MyTAG_RESULTS);
-
-            for(int i=0; i< mydata.length(); i++)
-            {
-                JSONObject c = mydata.getJSONObject(i);
-                String id = c.getString(MyTAG_ID);
-                String title = c.getString(MyTAG_TITLE);
-                String content = c.getString(MyTAG_CONTENT);
-                String date = c.getString(MyTAG_DATE);
-                String sub = c.getString(MyTAG_SUB);
-                String count = c.getString(MyTAG_COUNT);
-                String sumdate;
-
-                if(id.equals(Basicinfo.name)) {
-                    int ch = Integer.parseInt(date);
-                    int year = ch / 10000;
-                    int month = (ch % 10000) / 100;
-                    int day = (ch % 10000) % 100;
-                    sumdate = year+"년 "+month+"월 "+day+"일";
-                    //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
-                    mynoticeList.add(new Book(sumdate,id,title,content,sub,count));
-                }
-
-            }
-
-            //adapter = new BookListAdapter(getApplicationContext(),noticeList);
-            mybookListView.setAdapter(myadapter);
-
-        }catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    //게시판 데이터 뿌리기위함
+    //my게시판 book 데이터 뿌리기위함
     class myGetDataJSON extends AsyncTask<String,Void,String> {
 
         @Override
@@ -257,11 +223,282 @@ public class Book_Mywrite extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            myJSON1=null;
             myJSON1 = result;
             //Toast.makeText(BookMainActivity.this,result,Toast.LENGTH_SHORT).show();
-            insertBoard();
+
+            removeData();
+
+            try{
+                JSONObject jsonObj = new JSONObject(myJSON1);
+                mydata = jsonObj.getJSONArray(MyTAG_RESULTS);
+
+                for(int i=0; i< mydata.length(); i++)
+                {
+                    JSONObject c = mydata.getJSONObject(i);
+                    String id = c.getString(MyTAG_ID);
+                    String title = c.getString(MyTAG_TITLE);
+                    String content = c.getString(MyTAG_CONTENT);
+                    String date = c.getString(MyTAG_DATE);
+                    String sub = c.getString(MyTAG_SUB);
+                    String count = c.getString(MyTAG_COUNT);
+                    String sumdate;
+
+                    if(id.equals(Basicinfo.name)) {
+                        int ch = Integer.parseInt(date);
+                        int year = ch / 10000;
+                        int month = (ch % 10000) / 100;
+                        int day = (ch % 10000) % 100;
+                        sumdate = year+"년 "+month+"월 "+day+"일";
+                        //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
+                        mynoticeList.add(new Book(sumdate,id,title,content,sub,count));
+                    }
+
+                }
+
+                //adapter = new BookListAdapter(getApplicationContext(),noticeList);
+                mybookListView.setAdapter(myadapter);
+
+            }catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
+
+    //my게시판 job 데이터 뿌리기위함
+    class myJobGetDataJSON extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String uri = params[0];
+
+            BufferedReader bufferedReader = null;
+
+            try {
+                URL url = new URL(uri);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                StringBuilder sb = new StringBuilder();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String json;
+                while ((json = bufferedReader.readLine()) != null) {
+                    sb.append(json + "\n");
+                }
+
+                return sb.toString().trim();
+            } catch (Exception e) {
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            myJSON1=null;
+            myJSON1 = result;
+            //Toast.makeText(BookMainActivity.this,result,Toast.LENGTH_SHORT).show();
+
+            removeData();
+
+            try{
+                JSONObject jsonObj = new JSONObject(myJSON1);
+                mydata = jsonObj.getJSONArray(MyTAG_RESULTS);
+
+                for(int i=0; i< mydata.length(); i++)
+                {
+                    JSONObject c = mydata.getJSONObject(i);
+                    String id = c.getString(MyTAG_ID);
+                    String title = c.getString(MyTAG_TITLE);
+                    String content = c.getString(MyTAG_CONTENT);
+                    String date = c.getString(MyTAG_DATE);
+                    String sumdate;
+
+                    if(id.equals(Basicinfo.name)) {
+                        int ch = Integer.parseInt(date);
+                        int year = ch / 10000;
+                        int month = (ch % 10000) / 100;
+                        int day = (ch % 10000) % 100;
+                        sumdate = year+"년 "+month+"월 "+day+"일";
+                        //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
+                        mynoticeList.add(new Book(sumdate,id,title,content,"",""));
+                    }
+
+                }
+
+                //adapter = new BookListAdapter(getApplicationContext(),noticeList);
+                mybookListView.setAdapter(myadapter);
+
+            }catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //my게시판 club 데이터 뿌리기위함
+    class myClubGetDataJSON extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String uri = params[0];
+
+            BufferedReader bufferedReader = null;
+
+            try {
+                URL url = new URL(uri);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                StringBuilder sb = new StringBuilder();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String json;
+                while ((json = bufferedReader.readLine()) != null) {
+                    sb.append(json + "\n");
+                }
+
+                return sb.toString().trim();
+            } catch (Exception e) {
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            myJSON1=null;
+            myJSON1 = result;
+            //Toast.makeText(BookMainActivity.this,result,Toast.LENGTH_SHORT).show();
+
+            removeData();
+
+            try{
+                JSONObject jsonObj = new JSONObject(myJSON1);
+                mydata = jsonObj.getJSONArray(MyTAG_RESULTS);
+
+                for(int i=0; i< mydata.length(); i++)
+                {
+                    JSONObject c = mydata.getJSONObject(i);
+                    String id = c.getString(MyTAG_ID);
+                    String title = c.getString(MyTAG_TITLE);
+                    String content = c.getString(MyTAG_CONTENT);
+                    String date = c.getString(MyTAG_DATE);
+                    String sumdate;
+
+                    if(id.equals(Basicinfo.name)) {
+                        int ch = Integer.parseInt(date);
+                        int year = ch / 10000;
+                        int month = (ch % 10000) / 100;
+                        int day = (ch % 10000) % 100;
+                        sumdate = year+"년 "+month+"월 "+day+"일";
+                        //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
+                        mynoticeList.add(new Book(sumdate,id,title,content,"",""));
+                    }
+
+                }
+
+                //adapter = new BookListAdapter(getApplicationContext(),noticeList);
+                mybookListView.setAdapter(myadapter);
+
+            }catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //my게시판 free 데이터 뿌리기위함
+    class myFreeGetDataJSON extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String uri = params[0];
+
+            BufferedReader bufferedReader = null;
+
+            try {
+                URL url = new URL(uri);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                StringBuilder sb = new StringBuilder();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String json;
+                while ((json = bufferedReader.readLine()) != null) {
+                    sb.append(json + "\n");
+                }
+
+                return sb.toString().trim();
+            } catch (Exception e) {
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            myJSON1=null;
+            myJSON1 = result;
+            //Toast.makeText(BookMainActivity.this,result,Toast.LENGTH_SHORT).show();
+
+            removeData();
+
+            try{
+                JSONObject jsonObj = new JSONObject(myJSON1);
+                mydata = jsonObj.getJSONArray(MyTAG_RESULTS);
+
+                for(int i=0; i< mydata.length(); i++)
+                {
+                    JSONObject c = mydata.getJSONObject(i);
+                    String id = c.getString(MyTAG_ID);  //id
+                    String title = c.getString(MyTAG_TITLE);  //num
+                    String content = c.getString(MyTAG_CONTENT); //content
+                    String date = c.getString(MyTAG_DATE);    //date
+                    String sumdate;
+
+                    if(title.equals(Basicinfo.name)) {
+                        int ch = Integer.parseInt(date);
+                        int year = ch / 10000;
+                        int month = (ch % 10000) / 100;
+                        int day = (ch % 10000) % 100;
+                        sumdate = year+"년 "+month+"월 "+day+"일";
+                        //Toast.makeText(BookMainActivity.this,content,Toast.LENGTH_SHORT).show();
+                        mynoticeList.add(new Book(sumdate,title,id,content,"",""));
+                    }
+
+                }
+
+                //adapter = new BookListAdapter(getApplicationContext(),noticeList);
+                mybookListView.setAdapter(myadapter);
+
+            }catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    public void removeData()
+    {
+        int data_num = myadapter.getCount();//글전체 개수 파악
+        for(int i=0; i<data_num ;i++)
+        {
+            mynoticeList.remove(0); //지워지면 position 값이 계속 감소되므로 맨위에서 지우는게 옳다고 판단됨.
+        }
+
+        mybookListView.clearChoices();
+        myadapter.notifyDataSetChanged();
+    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -307,8 +544,46 @@ public class Book_Mywrite extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
 
+    @Override
+    public void onClick(View v) {
 
+        book.setSelected(false);
+        job.setSelected(false);
+        club.setSelected(false);
+        free.setSelected(false);
 
+        switch(v.getId())
+        {
+            case R.id.mybookbtn :
+                book.setSelected(true);
+                Book_Mywrite.myGetDataJSON start = new Book_Mywrite.myGetDataJSON();
+                start.execute("http://" + Basicinfo.URL + "/getcontent.php");
+                break;
+
+            case R.id.myjobbtn :
+                job.setSelected(true);
+                Book_Mywrite.myJobGetDataJSON job = new Book_Mywrite.myJobGetDataJSON();
+                job.execute("http://" + Basicinfo.URL + "/getjobdata.php");
+                break;
+
+            case R.id.mycirclebtn :
+                club.setSelected(true);
+                Book_Mywrite.myClubGetDataJSON club = new Book_Mywrite.myClubGetDataJSON();
+                club.execute("http://" + Basicinfo.URL + "/getclubdata.php");
+                break;
+
+            case R.id.myfreebtn :
+                free.setSelected(true);
+                Book_Mywrite.myFreeGetDataJSON free = new Book_Mywrite.myFreeGetDataJSON();
+                free.execute("http://" + Basicinfo.URL + "/getfreedata.php");
+                break;
+        }
+    }
 
 }

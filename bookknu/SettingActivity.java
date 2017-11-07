@@ -73,11 +73,9 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
         Wifi w = new Wifi(this);
         if(isChecked)
         {
-            Toast.makeText(SettingActivity.this, "on", Toast.LENGTH_SHORT).show();
             w.execute(Basicinfo.name,"on");
         }else
         {
-            Toast.makeText(SettingActivity.this, "off", Toast.LENGTH_SHORT).show();
             w.execute(Basicinfo.name,"off");
         }
 

@@ -48,7 +48,7 @@ import java.util.List;
  * Created by sungw on 2017-08-27.
  */
 //메시지 확인 Activity
-public class MessageActivity extends AppCompatActivity {
+public class MessageActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button m_send,m_receive;
 
@@ -101,27 +101,16 @@ public class MessageActivity extends AppCompatActivity {
         m_send = (Button)findViewById(R.id.send_button);
         m_receive = (Button)findViewById(R.id.receive_button);
 
+        m_send.setOnClickListener(this);
+        m_receive.setOnClickListener(this);
+
+        m_send.setSelected(true);
+
         //default send 화면
         MessageActivity.GetDataJSON b = new MessageActivity.GetDataJSON();
         b.execute("http://" + Basicinfo.URL + "/messagegetcontent.php");
 
-        m_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MessageActivity.GetDataJSON b = new MessageActivity.GetDataJSON();
-                b.execute("http://" + Basicinfo.URL + "/messagegetcontent.php");
 
-            }
-        });
-
-        m_receive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MessageActivity.GetDataJSON1 b = new MessageActivity.GetDataJSON1();
-                b.execute("http://" + Basicinfo.URL + "/msget.php");
-
-            }
-        });
 
         messageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -624,6 +613,33 @@ public class MessageActivity extends AppCompatActivity {
 
         return super.onKeyDown(keyCode, event);
     }
+
+    @Override
+    public void onClick(View v) {
+
+        m_send.setSelected(false);
+        m_receive.setSelected(false);
+
+
+        switch(v.getId())
+        {
+            case R.id.send_button :
+                m_send.setSelected(true);
+                MessageActivity.GetDataJSON b = new MessageActivity.GetDataJSON();
+                b.execute("http://" + Basicinfo.URL + "/messagegetcontent.php");
+                break;
+
+            case R.id.receive_button :
+                m_receive.setSelected(true);
+                MessageActivity.GetDataJSON1 c = new MessageActivity.GetDataJSON1();
+                c.execute("http://" + Basicinfo.URL + "/msget.php");
+
+
+                break;
+        }
+    }
+
+
 
 
 

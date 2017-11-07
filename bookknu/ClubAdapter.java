@@ -69,7 +69,7 @@ public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
 
-                CharSequence info[] = new CharSequence[] {"Message 보내기", "글읽기"};
+                CharSequence info[] = new CharSequence[] {"Message 보내기", "글읽기","신고하기"};
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("선택하세요!!");
@@ -138,6 +138,16 @@ public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ViewHolder> {
                                 read.putExtra("content",ccontent);
                                 context.startActivity(read);
                                 break;
+
+                            case 2:
+                                String redate =listItem.getC_date();
+                                String rename = listItem.getC_id();
+                                String retitle = listItem.getC_title();
+                                String recontent =  listItem.getC_content();
+                                ReportTask r = new ReportTask();
+                                r.execute(Basicinfo.name,rename,retitle,recontent,redate,"off"); //off는 읽지 않았다는 말
+                                break;
+
 
                         }
                         dialog.dismiss();
@@ -264,6 +274,112 @@ public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ViewHolder> {
             return null;
         }
     }
+
+    //신고하기
+    class ReportTask extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+        ReportTask()
+        {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+
+            if(result.equals("1"))
+            {
+                //Toast.makeText(BookClickActivity.this,"성공",Toast.LENGTH_SHORT).show();
+            }else
+            {
+            }
+
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            String login_url = "http://" + Basicinfo.URL + "/insertreport.php";
+
+            try
+            {
+
+                String sid = params[0];
+                String wid = params[1];
+                String title = params[2];
+                String content = params[3];
+                String date = params[4];
+                String state = params[5];
+                URL url =new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                //httpURLConnection.setConnectTimeout(8000);
+                //httpURLConnection.setReadTimeout(8000);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                String post_data = URLEncoder.encode("sid","UTF-8") + "=" + URLEncoder.encode(sid,"UTF-8") + "&"
+                        + URLEncoder.encode("wid","UTF-8") + "=" + URLEncoder.encode(wid,"UTF-8")  + "&"
+                        + URLEncoder.encode("title","UTF-8") + "=" + URLEncoder.encode(title,"UTF-8")  + "&"
+                        + URLEncoder.encode("content","UTF-8") + "=" + URLEncoder.encode(content,"UTF-8")  + "&"
+                        + URLEncoder.encode("date","UTF-8") + "=" + URLEncoder.encode(date,"UTF-8") + "&"
+                        + URLEncoder.encode("state","UTF-8") + "=" + URLEncoder.encode(state,"UTF-8");
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = null;
+                inputStream = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                String result="";
+                String line="";
+
+                //line = bufferedReader.readLine();
+                //result+=line;
+
+                while( (line = bufferedReader.readLine()) != null)
+                {
+                    result += line;
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+
+            }catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+    }
+
+
 
 
 

@@ -15,7 +15,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -49,6 +53,9 @@ public class JobMainActivity  extends AppCompatActivity{
 
     private Button click;
 
+    private Spinner sp;
+    private ArrayAdapter spadapter;
+
     private static final String JOBTAG_RESULTS = "result";
     private static final String JOBTAG_ID = "id";
     private static final String JOBTAG_TITLE = "title";
@@ -74,6 +81,22 @@ public class JobMainActivity  extends AppCompatActivity{
         mToggle.syncState();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        sp = (Spinner)findViewById(R.id.job_Spinner);
+        spadapter = ArrayAdapter.createFromResource(JobMainActivity.this,R.array.sorting, android.R.layout.simple_spinner_dropdown_item);
+        sp.setAdapter(spadapter);
+
+        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //0:오래된순,1:최신순,2:댓글순,3:조회순
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         recyclerView = (RecyclerView)findViewById(R.id.job_recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -285,5 +308,11 @@ public class JobMainActivity  extends AppCompatActivity{
         }
 
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 }

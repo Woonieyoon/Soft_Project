@@ -20,8 +20,11 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
@@ -64,6 +67,8 @@ public class FreeMainActivity extends AppCompatActivity {
 
     View layout;
     AlertDialog ad;
+    private Spinner sp;
+    private ArrayAdapter spadapter;
 
     //글쓰기위함
     private String myJSON;
@@ -102,9 +107,12 @@ public class FreeMainActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
         recyclerView = (RecyclerView)findViewById(R.id.free_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
 
 
         FreeMainActivity.GetDataJSON b = new FreeMainActivity.GetDataJSON();
@@ -211,7 +219,7 @@ public class FreeMainActivity extends AppCompatActivity {
 
         }else if(a==3)//동아리
         {
-            startActivity(new Intent(this,FreeMainActivity.class));
+            startActivity(new Intent(this,ClubMainActivity.class));
         }else if(a==4)//자유
         {
             startActivity(new Intent(this,FreeMainActivity.class));

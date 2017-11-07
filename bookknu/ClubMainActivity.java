@@ -16,7 +16,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +30,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,7 +39,7 @@ import java.util.List;
 /**
  * Created by sungw on 2017-09-05.
  */
-
+//동아리
 public class ClubMainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
@@ -44,10 +51,16 @@ public class ClubMainActivity extends AppCompatActivity {
 
     private List<ClubListItem> listItems;
 
+
     private String myJSON;
     JSONArray peoples = null;
 
     private Button click;
+
+    private Spinner sp;//정렬 spinner
+    private ArrayAdapter spadapter;
+    private EditText searchtext;//검색 edit
+    private Button search;//검색버튼
 
     private static final String CLUBTAG_RESULTS = "result";
     private static final String CLUBTAG_ID = "id";
@@ -74,6 +87,22 @@ public class ClubMainActivity extends AppCompatActivity {
         mToggle.syncState();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        sp=(Spinner)findViewById(R.id.club_Spinner);
+        spadapter = ArrayAdapter.createFromResource(ClubMainActivity.this,R.array.sorting, android.R.layout.simple_spinner_dropdown_item);
+        sp.setAdapter(spadapter);
+
+        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //0:오래된순,1:최신순,2:댓글순,3:조회순
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         recyclerView = (RecyclerView)findViewById(R.id.club_recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -284,5 +313,11 @@ public class ClubMainActivity extends AppCompatActivity {
         }
 
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 }

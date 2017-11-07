@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -167,7 +168,7 @@ public class BookMainActivity extends AppCompatActivity {
 
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { //default 값으로 0이 잡힘
                 //0:오래된순,1:최신순,2:댓글순,3:조회순
                 sp_number = position;
                 spinner_board(position);
@@ -197,6 +198,11 @@ public class BookMainActivity extends AppCompatActivity {
 
             }
         });
+
+
+
+
+
 
 
         //게시글 삽입위함
@@ -1020,5 +1026,11 @@ public class BookMainActivity extends AppCompatActivity {
        }
 
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 }

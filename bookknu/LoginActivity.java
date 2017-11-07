@@ -159,7 +159,6 @@ public class LoginActivity extends AppCompatActivity {
             {
                 try
                 {
-
                     String id = params[1];
                     String pwd = params[2];
                     URL url =new URL(login_url);
