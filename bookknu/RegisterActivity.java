@@ -41,7 +41,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private String htmlTestUrl="https://my.knu.ac.kr/stpo/comm/support/loginPortal/login.action?redirUrl=%2Fstpo%2Fstpo%2Fmain%2Fmain.action";
+    private String htmlTestUrl="https://my.knu.ac.kr/stpo/comm/support/loginPortal/login.action?redirUrl=%2Fstpo%2Fstpo%2Fmain%2Fmain.action&menuParam=901";
     private boolean loginCheck = false; // 로그인 확인
 
     Button checkID,register;//등록
@@ -51,20 +51,24 @@ public class RegisterActivity extends AppCompatActivity {
 
     TextView kid,kpwd;//통합정보시스템
 
-    String mId,mPw;
+    private String mId,mPw;
     String st;
     Document doc1;
 
+    String s;
+    String emp;
+
     private boolean idcheck = false;
+
+    String gap=null;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        //getSupportActionBar().hide();
-        setContentView(R.layout.activity_register);
+
+                setContentView(R.layout.activity_register);
 
         //회원가입
         id = (TextView)findViewById(R.id.idEdit);
@@ -146,6 +150,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 mId = kid.getText().toString();
                 mPw = kpwd.getText().toString();
+
                 LoginTask t = new LoginTask();
                 t.execute();
 
@@ -160,6 +165,114 @@ public class RegisterActivity extends AppCompatActivity {
         AlertDialog alertDialog;
         Context context;
         CustomTask(Context ctx)
+        {
+            context=ctx;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            alertDialog  = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Login status");
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+
+            if(result.equals("1"))
+            {
+                result = "가입되었습니다";
+
+                CustomTask1 c = new CustomTask1(RegisterActivity.this);
+                c.execute(id.getText().toString(),pwd.getText().toString(),kid.getText().toString(),kpwd.getText().toString());
+
+                alertDialog.setMessage(result);
+                alertDialog.show();
+                finish();
+            }else
+            {
+                result = "다시 입력하세요";
+                alertDialog.setMessage(result);
+                alertDialog.show();
+            }
+
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String type = params[0];
+            String login_url = "http://" + Basicinfo.URL + "/login_book.php";
+
+            if(type.equals("register"))
+            {
+                try
+                {
+
+                    String id = params[1];
+                    String pwd = params[2];
+                    URL url =new URL(login_url);
+                    HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8") + "&"
+                            + URLEncoder.encode("pwd","UTF-8") + "=" + URLEncoder.encode(pwd,"UTF-8");
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                    outputStream.close();
+
+                    InputStream inputStream = null;
+                    inputStream = httpURLConnection.getInputStream();
+
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                    String result="";
+                    String line="";
+
+
+
+                    while( (line = bufferedReader.readLine()) != null)
+                   {
+                        result += line;
+                    }
+
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                    return result;
+
+                }catch(MalformedURLException e)
+                {
+                    e.printStackTrace();
+                }catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+            return null;
+        }
+    }
+
+    class CustomTask1 extends AsyncTask<String, Void, String> {
+
+        AlertDialog alertDialog;
+        Context context;
+        CustomTask1(Context ctx)
         {
             context=ctx;
         }
@@ -198,29 +311,31 @@ public class RegisterActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            String type = params[0];
-            String login_url = "http://" + Basicinfo.URL + "/login_book.php";
 
-            if(type.equals("register"))
-            {
+            String login_url = "http://" + Basicinfo.URL + "/login_booka.php";
+
+
                 try
                 {
 
-                    String id = params[1];
-                    String pwd = params[2];
+                    String id = params[0];
+                    String pwd = params[1];
+                    String knuid = params[2];
+                    String knupwd = params[3];
                     URL url =new URL(login_url);
                     HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setDoOutput(true);
                     httpURLConnection.setDoInput(true);
-                    //httpURLConnection.setConnectTimeout(8000);
-                    //httpURLConnection.setReadTimeout(8000);
+
 
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
                     String post_data = URLEncoder.encode("id","UTF-8") + "=" + URLEncoder.encode(id,"UTF-8") + "&"
-                            + URLEncoder.encode("pwd","UTF-8") + "=" + URLEncoder.encode(pwd,"UTF-8");
+                            + URLEncoder.encode("pwd","UTF-8") + "=" + URLEncoder.encode(pwd,"UTF-8") +"&"
+                            + URLEncoder.encode("knuid","UTF-8") + "=" + URLEncoder.encode(knuid,"UTF-8") + "&"
+                            + URLEncoder.encode("knupwd","UTF-8") + "=" + URLEncoder.encode(knupwd,"UTF-8");
 
                     bufferedWriter.write(post_data);
                     bufferedWriter.flush();
@@ -235,11 +350,10 @@ public class RegisterActivity extends AppCompatActivity {
                     String result="";
                     String line="";
 
-                    //line = bufferedReader.readLine();
-                    //result+=line;
+
 
                     while( (line = bufferedReader.readLine()) != null)
-                   {
+                    {
                         result += line;
                     }
 
@@ -256,7 +370,7 @@ public class RegisterActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-            }
+
             return null;
         }
     }
@@ -267,11 +381,6 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //asyncDialog = new ProgressDialog(MainActivity.this);
-            //asyncDialog.setMessage("로딩중입니다..");
-            //Toast.makeText(MainActivity.this,"Loading",Toast.LENGTH_SHORT).show();
-            //asyncDialog.show();
-
         }
 
         @Override
@@ -285,15 +394,19 @@ public class RegisterActivity extends AppCompatActivity {
                         .method(Connection.Method.POST)
                         .execute();
 
+                gap="3";
+
                 Map<String, String> loginCookies=res.cookies();
 
+                gap="4";
+
                 Document doc = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/main/main.action").cookies(loginCookies).get();
-                if(doc.toString().contains("//게시물")) {
+
+                gap="5";
+                if(doc.toString().contains("//게시물"))
+                {
 
                     loginCheck = !loginCheck;
-
-                    Document doc2 = Jsoup.connect("http://my.knu.ac.kr/stpo/stpo/stud/infoMngt/basisMngt/list.action").cookies(loginCookies).get();
-
                 }
 
             }catch (Exception e)
@@ -309,6 +422,8 @@ public class RegisterActivity extends AppCompatActivity {
 
             super.onPostExecute(result);
 
+            //loginCheck
+            //true
             if(loginCheck) {
 
                 Toast t = Toast.makeText(RegisterActivity.this, "인증되었습니다", Toast.LENGTH_SHORT);
@@ -424,27 +539,5 @@ public class RegisterActivity extends AppCompatActivity {
             return null;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

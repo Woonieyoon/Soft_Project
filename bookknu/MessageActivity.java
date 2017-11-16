@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -170,6 +171,20 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                                 break;
 
                             case 1: //Message 확인
+
+                                Context ctx1 = MessageActivity.this;
+                                LayoutInflater inflater1 = (LayoutInflater)ctx1.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                layout = inflater1.inflate(R.layout.message_confirm,null);
+                                final AlertDialog.Builder aDlgb1 = new AlertDialog.Builder(ctx1);
+                                aDlgb1.setView(layout);
+                                ad = aDlgb1.create();
+                                ad.show();
+
+                                TextView tv = (TextView)layout.findViewById(R.id.message_cf);
+                                tv.setText( ((Message)adapter.getItem(s)).getM_content().toString() );
+                                break;
+
+
 
                         }
 

@@ -88,21 +88,6 @@ public class ClubMainActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        sp=(Spinner)findViewById(R.id.club_Spinner);
-        spadapter = ArrayAdapter.createFromResource(ClubMainActivity.this,R.array.sorting, android.R.layout.simple_spinner_dropdown_item);
-        sp.setAdapter(spadapter);
-
-        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //0:오래된순,1:최신순,2:댓글순,3:조회순
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
 
         recyclerView = (RecyclerView)findViewById(R.id.club_recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -114,8 +99,16 @@ public class ClubMainActivity extends AppCompatActivity {
         click.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent write = new Intent(ClubMainActivity.this,ClubInsertActivity.class);
-                startActivity(write);
+
+                if(Basicinfo.po_writing.equals("off"))
+                {
+                    Toast.makeText(ClubMainActivity.this,"글쓰기 제한",Toast.LENGTH_SHORT).show();
+                }else
+                {
+                    Intent write = new Intent(ClubMainActivity.this,ClubInsertActivity.class);
+                    startActivity(write);
+                }
+
 
             }
         });

@@ -67,6 +67,7 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
     private static final String TAG_ID = "id";
     private static final String TAG_STATE = "ustatus";
 
+    //사용안함
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {//설정
 
@@ -97,10 +98,6 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        wifi_check = (Switch)findViewById(R.id.wifi_check);
-
-        SettingActivity.Wifi_State s = new SettingActivity.Wifi_State(this);
-        s.execute(Basicinfo.name);
 
         String[] stringList = {"신고 현황","로그인 차단관리","글쓰기 차단관리"};
         listAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,stringList);
@@ -114,8 +111,6 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
 
                 switch (position)
                 {
@@ -137,11 +132,6 @@ public class SettingActivity extends AppCompatActivity implements CompoundButton
                 }
             }
         });
-
-        wifi_check.setOnCheckedChangeListener(this);
-
-
-
 
         //-------------MENU------------------------
         NavigationView n = (NavigationView)findViewById(R.id.settingnav_view);

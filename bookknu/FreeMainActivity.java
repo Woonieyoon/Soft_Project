@@ -113,8 +113,6 @@ public class FreeMainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 
-
-
         FreeMainActivity.GetDataJSON b = new FreeMainActivity.GetDataJSON();
         b.execute("http://" + Basicinfo.URL + "/getfreetitle.php");
 
@@ -146,7 +144,6 @@ public class FreeMainActivity extends AppCompatActivity {
                         start.execute("http://" + Basicinfo.URL + "/getfreenum.php");
 
                         ad.dismiss();
-
                     }
                 });
 
@@ -162,7 +159,6 @@ public class FreeMainActivity extends AppCompatActivity {
 
             }
         });
-
 
 
         NavigationView n = (NavigationView)findViewById(R.id.free_nav_view);

@@ -76,10 +76,6 @@ public class Book_MywriteClick extends AppCompatActivity {
         mycommentListView1 = (ListView)findViewById(R.id.commentlist1);
         mynoticeList1 =  new ArrayList<Comment>();
 
-        mynoticeList1.add(new Comment("  굿!","홍길동","2017-06-20"));
-        mynoticeList1.add(new Comment("  감사합니다","홍길동","2017-06-05"));
-        mynoticeList1.add(new Comment("  감사합니다","홍길동","2017-06-04"));
-
         myadapter1 = new CommentListAdapter(getApplicationContext(),mynoticeList1);
         mycommentListView1.setAdapter(myadapter1);
 
@@ -134,7 +130,28 @@ public class Book_MywriteClick extends AppCompatActivity {
             public void onClick(View v) {
 
                 Book_MywriteClick.DeleteTask st = new Book_MywriteClick.DeleteTask(Book_MywriteClick.this);
-                st.execute(myname1.getText().toString(),mytitle1.getText().toString(),mycontent1.getText().toString());
+                String link="http://" + Basicinfo.URL + "/mydelete.php"; //default
+
+                if(Basicinfo.buttonnum==0)//책
+                {
+                    link =    "http://" + Basicinfo.URL + "/mydelete.php";
+                    st.execute(link,myname1.getText().toString(),mytitle1.getText().toString(),mycontent1.getText().toString());
+                }else if(Basicinfo.buttonnum==1)//취업
+                {
+                    link =    "http://" + Basicinfo.URL + "/myjobdelete.php";
+                    st.execute(link,myname1.getText().toString(),mytitle1.getText().toString(),mycontent1.getText().toString());
+                }else if(Basicinfo.buttonnum==2)//동아리
+                {
+                    link =    "http://" + Basicinfo.URL + "/myclubdelete.php";
+                    st.execute(link,myname1.getText().toString(),mytitle1.getText().toString(),mycontent1.getText().toString());
+                }else  //숲
+                {
+                    link =    "http://" + Basicinfo.URL + "/myfreedelete.php";
+                    st.execute(link,mytitle1.getText().toString(),myname1.getText().toString(),mycontent1.getText().toString());
+                }
+
+
+
 
             }
         });
@@ -154,8 +171,6 @@ public class Book_MywriteClick extends AppCompatActivity {
 
             }
         });
-
-
     }
 
 
@@ -199,20 +214,18 @@ public class Book_MywriteClick extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
 
-            String login_url = "http://" + Basicinfo.URL + "/mydelete.php";
+            String login_url = params[0];
 
                 try
                 {
-                    String id = params[0];
-                    String title = params[1];
-                    String content = params[2];
+                    String id = params[1];
+                    String title = params[2];
+                    String content = params[3];
                     URL url =new URL(login_url);
                     HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setDoOutput(true);
                     httpURLConnection.setDoInput(true);
-                    //httpURLConnection.setConnectTimeout(8000);
-                    //httpURLConnection.setReadTimeout(8000);
 
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));

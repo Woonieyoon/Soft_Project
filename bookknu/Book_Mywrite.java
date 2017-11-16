@@ -562,28 +562,31 @@ public class Book_Mywrite extends AppCompatActivity implements View.OnClickListe
         {
             case R.id.mybookbtn :
                 book.setSelected(true);
+                Basicinfo.buttonnum = 0;
                 Book_Mywrite.myGetDataJSON start = new Book_Mywrite.myGetDataJSON();
                 start.execute("http://" + Basicinfo.URL + "/getcontent.php");
                 break;
 
             case R.id.myjobbtn :
                 job.setSelected(true);
+                Basicinfo.buttonnum = 1;
                 Book_Mywrite.myJobGetDataJSON job = new Book_Mywrite.myJobGetDataJSON();
                 job.execute("http://" + Basicinfo.URL + "/getjobdata.php");
                 break;
 
             case R.id.mycirclebtn :
                 club.setSelected(true);
+                Basicinfo.buttonnum = 2;
                 Book_Mywrite.myClubGetDataJSON club = new Book_Mywrite.myClubGetDataJSON();
                 club.execute("http://" + Basicinfo.URL + "/getclubdata.php");
                 break;
 
             case R.id.myfreebtn :
                 free.setSelected(true);
+                Basicinfo.buttonnum = 3;
                 Book_Mywrite.myFreeGetDataJSON free = new Book_Mywrite.myFreeGetDataJSON();
                 free.execute("http://" + Basicinfo.URL + "/getfreedata.php");
                 break;
         }
     }
-
 }

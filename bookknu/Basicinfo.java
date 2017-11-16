@@ -6,7 +6,9 @@ package myhome.bookknu;
 
 public class Basicinfo {
 
-    public static final String URL =  "172.30.1.15";
-    public static String name ="";
-    public static String po_writing="";
+    public static final String URL =  "172.30.1.26";
+    public static String name ="";       //Login name
+    public static String po_writing="";  //글쓰기 가능
+    public static String internet_state="";
+    public static int buttonnum=0;
 }
