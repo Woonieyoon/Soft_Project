@@ -42,7 +42,7 @@
     <TextView
         android:drawableStart="@drawable/ic_security_black_24dp"
         android:drawableLeft="@drawable/ic_security_black_24dp"
-        android:text="knu앱"
+        android:text="knu_life"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -70,7 +70,7 @@
         android:textSize="15dp"
         android:gravity="center"
         android:textStyle="bold" />
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -91,73 +91,73 @@
             android:textSize="15dp"
             android:gravity="center"
             android:textStyle="bold" />
-        
-            <ScrollView
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:isScrollContainer="true">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:isScrollContainer="true">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="15dp"
+                    android:orientation="horizontal">
+
+                    <myhome.bookknu.CircleImageView
+                        android:src = "@drawable/me"
+                        android:id="@+id/imageView"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        app:civ_border_color="@color/colorPrimary"
+                        app:civ_border_width="2dp"
+                        />
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginBottom="15dp"
-                        android:orientation="horizontal">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="vertical">
 
-                        <com.example.sungw.knuprojcet.CircleImageView
-                            android:src = "@drawable/me"
-                            android:id="@+id/imageView"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            app:civ_border_color="@color/colorPrimary"
-                            app:civ_border_width="2dp"
-                            />
-                        
-                        <LinearLayout
+                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:orientation="vertical">
+                            android:text="윤성원"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:textSize="17dp"/>
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="윤성원"
-                                android:textStyle="bold"
-                                android:textColor="@color/colorPrimaryDark"
-                                android:textSize="17dp"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="컴퓨터정보학부 12학번"
+                            android:textColor="#000000"
+                            android:textSize="15dp"/>
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="컴퓨터정보학부 12학번"
-                                android:textColor="#000000"
-                                android:textSize="15dp"/>
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="sungwon126@naver.com"
-                                android:textColor="#000000"
-                                android:textSize="15dp"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="sungwon126@naver.com"
+                            android:textColor="#000000"
+                            android:textSize="15dp"/>
 
 
-                        </LinearLayout>
-                        
                     </LinearLayout>
 
-                    
                 </LinearLayout>
-                
-                
-            </ScrollView>
+
+
+            </LinearLayout>
+
+
+        </ScrollView>
 
 
 

@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content" />
 
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -51,6 +52,7 @@
                     android:text="글쓰기"
                     android:layout_weight="1"
                     android:id="@+id/free_write_button"
+                    android:background="@drawable/writebutton"
                     />
 
 

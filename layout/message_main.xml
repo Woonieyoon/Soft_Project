@@ -31,14 +31,16 @@
                 android:layout_height="wrap_content"
                 android:id= "@+id/send_button"
                 android:layout_weight="1"
-                android:text="보낸 메시지"/>
+                android:text="보낸 메시지"
+                android:background="@drawable/button_chang"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/receive_button"
                 android:layout_weight="1"
-                android:text="받은 메시지"/>
+                android:text="받은 메시지"
+                android:background="@drawable/button_chang"/>
         </LinearLayout>
 
         <LinearLayout

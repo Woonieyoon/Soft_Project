@@ -15,8 +15,8 @@
         android:textSize="32dp"
         android:textStyle="bold"
         android:gravity="center"
-        android:paddingStart="70dp"
-        android:paddingLeft="70dp"/>
+        android:paddingStart="80dp"
+        android:paddingLeft="80dp"/>
 
 
 </android.support.v7.widget.Toolbar>
